@@ -21,10 +21,9 @@ public class ThreadRunner
 			}
 			else {System.out.println("input must be 'Quiet' or 'Verbose' case sensitive");}
 		}
-		System.out.println(mode);
-		Server serverThread = new Server();
-		Client clientThread = new Client();
-		InterHost ErrorSimThread = new InterHost();
+		Server serverThread = new Server(mode);
+		Client clientThread = new Client(mode);
+		ErrorSim ErrorSimThread = new ErrorSim(mode);
 		
 		serverThread.start();
 		ErrorSimThread.start();

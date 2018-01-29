@@ -11,6 +11,12 @@
 import java.net.*;
 public class Client extends Thread
 {
+	boolean mode;
+	public Client(boolean mode)
+	{
+		this.mode = mode;
+	}
+	
 	public void run()
 	{
 		try {
@@ -41,23 +47,23 @@ public class Client extends Thread
 			if(i == 11){//makes invalid packet
 				toSend[1] = 0x00;
 				packetS.setData(toSend);
-				packetPrint.Print("Invalid packet",packetS);
+				if(this.mode) {packetPrint.Print("Invalid packet",packetS);}
 			}
 			else if (i%2 == 0) {//makes a reading packet
 				toSend[1] = 0x01;
 				packetS.setData(toSend);
-				packetPrint.Print("Reading packet",packetS);
+				if(this.mode) {packetPrint.Print("Reading packet",packetS);}
 			}
 			else if (i%2 == 1) {//makes a writing packet
 				toSend[1] = 0x02;
 				packetS.setData(toSend);
-				packetPrint.Print("Writing packet",packetS);
+				if(this.mode) {packetPrint.Print("Writing packet",packetS);}
 			}
 			
 			socket.send(packetS);
 			//time passes here while waiting for response from server
 			socket.receive(packetR);
-			packetPrint.Print("Received from Host", packetR);
+			if(this.mode) {packetPrint.Print("Received from Host", packetR);}
 		}
 	}
 }

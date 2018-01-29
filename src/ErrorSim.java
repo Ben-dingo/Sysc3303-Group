@@ -9,8 +9,14 @@
  * sent over to the client. 
  */
 import java.net.*;
-public class InterHost extends Thread
+public class ErrorSim extends Thread
 {
+	boolean mode;
+	public ErrorSim(boolean mode)
+	{
+		this.mode = mode;
+	}
+	
 	public void run()
 	{
 		try {
@@ -30,19 +36,19 @@ public class InterHost extends Thread
 			while(true)
 			{
 				socketR.receive(packetR);
-				packetPrint.Print("Received from Client",packetR);
+				if(this.mode) {packetPrint.Print("Received from Client",packetR);}
 				
 				DatagramPacket packetS = new DatagramPacket(packetR.getData(),packetR.getLength(),localHostAddress,69);
-				packetPrint.Print("Sending to Server",packetS);
+				if(this.mode) {packetPrint.Print("Sending to Server",packetS);}
 				socketS.send(packetS);
 				
 				DatagramPacket ServerPacketR = new DatagramPacket(new byte[4],4);
 				socketS.receive(ServerPacketR);
-				packetPrint.Print("Received from Server", ServerPacketR);
+				if(this.mode) {packetPrint.Print("Received from Server", ServerPacketR);}
 				
 				DatagramPacket ServerPacketS = new DatagramPacket(ServerPacketR.getData(),ServerPacketR.getLength(),localHostAddress,packetR.getPort());
 				DatagramSocket HostSocketS = new DatagramSocket();//makes socket specifically for next send
-				packetPrint.Print("Sending to Client",ServerPacketS);
+				if(this.mode) {packetPrint.Print("Sending to Client",ServerPacketS);}
 				HostSocketS.send(ServerPacketS);
 				socketR.close();
 			}
