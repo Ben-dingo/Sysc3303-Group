@@ -27,7 +27,7 @@ public class Server extends Thread
 
 	public void ServerPurpose() throws Exception
 	{
-		DatagramSocket socketR = new DatagramSocket(69,InetAddress.getLocalHost());
+		DatagramSocket socketR = new DatagramSocket(69,InetAddress.getLocalHost());//must be a new non-unique port
 		DatagramPacket packetR = new DatagramPacket(new byte[12],12);
 		DatagramPacket packetS = new DatagramPacket(new byte[4],4);
 		
