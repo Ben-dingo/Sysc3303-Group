@@ -28,37 +28,16 @@ public class ThreadRunner
 			{
 				System.out.println("Shutting down server.");
 				shutoff = true;
-				mode = true;
 				break;
 			}
 			else {System.out.println("input must be 'Quiet' or 'Verbose' case sensitive");}
 			
 			
 		}
-		while(true) {
-			if(shutoff == false) {
-				System.out.println("Enter message.");
-				message = reader.next();
-				if(message != "") {
-					break;
-				}
-					else if(message.toLowerCase().equals("quit"))
-				{
-						System.out.println("Shutting down server.");
-				}
-				else {
-					System.out.println("A message must be entered to procede.");
-				}
-			}
-			else{
-				message = "shutoff";
-				break;
-			}
-			
-		}
+		
 		
 		Server serverThread = new Server(mode);
-		Client clientThread = new Client(mode, message);
+		Client clientThread = new Client(mode);
 		ErrorSim ErrorSimThread = new ErrorSim(mode);
 		
 		serverThread.start();

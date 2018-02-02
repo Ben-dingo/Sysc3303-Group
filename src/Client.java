@@ -9,14 +9,20 @@
  */
 
 import java.net.*;
+import java.util.Scanner;
 public class Client extends Thread
 {
 	boolean mode;
 	String message;
-	public Client(boolean mode, String message)
+	Scanner reader = new Scanner(System.in);
+	boolean shutoff = false;
+	
+	
+	public Client(boolean mode)
 	{
 		this.mode = mode;
-		this.message = message;
+		
+		
 	}
 	
 	public void run()
@@ -40,6 +46,27 @@ public class Client extends Thread
 		{
 			byte[] toSend = new byte[12];//byte array to become packet data
 			//String string = "files.txt";
+			while(true) {
+				if(shutoff == false) {
+					System.out.println("Enter message.");
+					message = reader.next();
+					if(message != "") {
+						break;
+					}
+						else if(message.toLowerCase().equals("quit"))
+					{
+							System.out.println("Shutting down server.");
+					}
+					else {
+						System.out.println("A message must be entered to procede.");
+					}
+				}
+				else{
+					message = "shutoff";
+					break;
+				}
+				
+			}
 			byte[] file = message.getBytes();
 			for(int j = 0; j < file.length; j++)
 				toSend[j+2] = file[j];//puts string into correct spot in byte array
