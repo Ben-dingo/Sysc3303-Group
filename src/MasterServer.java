@@ -1,13 +1,16 @@
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 
-public class MasterServer {
-	
+public class MasterServer extends Thread
+{	
 	boolean mode;
 	public MasterServer(boolean mode)
 	{
 		this.mode = mode;
+		System.out.println("Master Server made");
 	}
 
 	
@@ -23,13 +26,13 @@ public class MasterServer {
 	{
 		DatagramSocket socketR = new DatagramSocket(69,InetAddress.getLocalHost());
 		DatagramPacket packetR = new DatagramPacket(new byte[12],12);
-		DatagramPacket packetS = new DatagramPacket(new byte[4],4);
 		
 		while(true)
 		{
 			socketR.receive(packetR);
-			Server newThread = new Server(this.mode);
-			
+			int random =(int)(Math.random()*100);
+			Server newThread = new Server(this.mode,packetR);
+			newThread.start();
 			
 			socketR.close();//closes the port
 		}
