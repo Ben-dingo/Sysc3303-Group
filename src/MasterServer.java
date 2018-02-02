@@ -18,7 +18,7 @@ public class MasterServer extends Thread
 		try {
 			MasterPurpose();
 		} catch (Exception e) {
-			System.out.println("MasterServer fucked up");
+			System.out.println("MasterServer has failed");
 		}
 	}
 	

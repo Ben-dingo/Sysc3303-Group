@@ -30,7 +30,7 @@ public class Client extends Thread
 		try {
 			ClientPurpose();
 		} catch (Exception e) {
-			System.out.println("client fucked up");
+			System.out.println("client has failed");
 		}
 	}
 	
@@ -50,7 +50,7 @@ public class Client extends Thread
 			while(true) 
 			{
 				if(shutoff == true) {break;}
-				System.out.println("Would you like to read write?");
+				System.out.println("Would you like to read, write or quit?");
 				String temp = reader.next();
 				if(temp.toLowerCase().equals("quit")){
 					System.out.println("Shutting down server.");
@@ -67,7 +67,7 @@ public class Client extends Thread
 					break;
 				}
 				else {
-					System.out.println("Must be a read or a wrte request.");
+					System.out.println("Must be a read or a write request.");
 				}
 			}
 			
@@ -122,21 +122,6 @@ public class Client extends Thread
 				else{
 					if(this.mode) {packetPrint.Print("Writing packet",packetS);}
 				}
-			}
-			if(false){//makes invalid packet
-				toSend[1] = 0x00;
-				packetS.setData(toSend);
-				if(this.mode) {packetPrint.Print("Invalid packet",packetS);}
-			}
-			else if (false) {//makes a reading packet
-				toSend[1] = 0x01;
-				packetS.setData(toSend);
-				if(this.mode) {packetPrint.Print("Reading packet",packetS);}
-			}
-			else if (true) {//makes a writing packet
-				toSend[1] = 0x02;
-				packetS.setData(toSend);
-				if(this.mode) {packetPrint.Print("Writing packet",packetS);}
 			}
 			socket.send(packetS);
 			if(shutoff == true) {break;}

@@ -25,7 +25,7 @@ public class Server extends Thread
 		try {
 			ServerPurpose();
 		} catch (Exception e) {
-			System.out.println("Server fucked up");
+			System.out.println("Server has failed");
 		}
 	}
 

@@ -22,7 +22,7 @@ public class ErrorSim extends Thread
 		try {
 			ErrorSimPurpose();
 		} catch (Exception e) {
-			System.out.println("Error Sim fucked up");
+			System.out.println("Error Sim has failed");
 		}
 	}
 	

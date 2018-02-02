@@ -13,26 +13,24 @@ public class ThreadRunner
 		{
 			
 			System.out.println("'Quiet' or 'Verbose'?");
-			String bitches = reader.next();
+			String selection = reader.next();
 			
-			if(bitches.toLowerCase().equals("quiet"))
+			if(selection.toLowerCase().equals("quiet"))
 			{
 				break;
 			}
-			else if(bitches.toLowerCase().equals("verbose"))
+			else if(selection.toLowerCase().equals("verbose"))
 			{
 				mode = true;
 				break;
 			}
-			else if(bitches.toLowerCase().equals("quit"))
+			else if(selection.toLowerCase().equals("quit"))
 			{
 				System.out.println("Shutting down server.");
 				shutoff = true;
 				break;
 			}
 			else {System.out.println("input must be 'Quiet' or 'Verbose' case sensitive");}
-			
-			
 		}
 		
 		
