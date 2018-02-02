@@ -10,6 +10,7 @@ public class MasterServer {
 		this.mode = mode;
 	}
 
+	
 	public void run() {
 		try {
 			MasterPurpose();

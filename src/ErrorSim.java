@@ -11,6 +11,7 @@
 import java.net.*;
 public class ErrorSim extends Thread
 {
+	boolean shutoff = false;
 	boolean mode;
 	public ErrorSim(boolean mode)
 	{
@@ -41,7 +42,10 @@ public class ErrorSim extends Thread
 				DatagramPacket packetS = new DatagramPacket(packetR.getData(),packetR.getLength(),localHostAddress,69);
 				if(this.mode) {packetPrint.Print("Sending to Server",packetS);}
 				socketS.send(packetS);
-				
+				if(shutoff == true) {
+					socketR.close();
+					
+				}
 				DatagramPacket ServerPacketR = new DatagramPacket(new byte[4],4);
 				socketS.receive(ServerPacketR);
 				if(this.mode) {packetPrint.Print("Received from Server", ServerPacketR);}
@@ -50,7 +54,8 @@ public class ErrorSim extends Thread
 				DatagramSocket HostSocketS = new DatagramSocket();//makes socket specifically for next send
 				if(this.mode) {packetPrint.Print("Sending to Client",ServerPacketS);}
 				HostSocketS.send(ServerPacketS);
-				socketR.close();
+				
+				
 			}
 	}
 }
