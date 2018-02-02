@@ -47,11 +47,12 @@ public class ErrorSim extends Thread
 				{
 					System.out.println("ErrorSim understands");
 					socketR.close();
+					Thread.currentThread().interrupt();
 					break;
 				}
 				
 				DatagramPacket ServerPacketR = new DatagramPacket(new byte[4],4);
-				socketS.receive(ServerPacketR);
+				socketR.receive(ServerPacketR);
 				if(this.mode) {packetPrint.Print("Received from Server", ServerPacketR);}
 				
 				DatagramPacket ServerPacketS = new DatagramPacket(ServerPacketR.getData(),ServerPacketR.getLength(),localHostAddress,packetR.getPort());

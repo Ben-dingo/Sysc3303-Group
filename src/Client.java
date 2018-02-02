@@ -68,6 +68,9 @@ public class Client extends Thread
 				message = "ShutDown0000";
 				toSend = message.getBytes();
 				packetS.setData(toSend);
+				socket.send(packetS);
+				Thread.currentThread().interrupt();
+				break;
 			}
 			else
 			{
@@ -77,23 +80,21 @@ public class Client extends Thread
 				toSend[0] = 0x00;
 				toSend[toSend.length-1] = 0x00;
 			}
-			/*
-			if(i == 11){//makes invalid packet
+			if(false){//makes invalid packet
 				toSend[1] = 0x00;
 				packetS.setData(toSend);
 				if(this.mode) {packetPrint.Print("Invalid packet",packetS);}
 			}
-			else if (i%2 == 0) {//makes a reading packet
+			else if (false) {//makes a reading packet
 				toSend[1] = 0x01;
 				packetS.setData(toSend);
 				if(this.mode) {packetPrint.Print("Reading packet",packetS);}
 			}
-			else if (i%2 == 1) {//makes a writing packet
+			else if (true) {//makes a writing packet
 				toSend[1] = 0x02;
 				packetS.setData(toSend);
 				if(this.mode) {packetPrint.Print("Writing packet",packetS);}
 			}
-			*/
 			socket.send(packetS);
 			if(shutoff == true) {break;}
 			//time passes here while waiting for response from server
