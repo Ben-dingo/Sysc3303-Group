@@ -10,7 +10,6 @@ public class MasterServer extends Thread
 	public MasterServer(boolean mode)
 	{
 		this.mode = mode;
-		System.out.println("Master Server made");
 	}
 
 	
@@ -30,6 +29,15 @@ public class MasterServer extends Thread
 		while(true)
 		{
 			socketR.receive(packetR);
+			
+			String message = new String(packetR.getData());
+			if(message.equals("ShutDown0000"))
+			{
+				System.out.println("MasterServer understands");
+				socketR.close();
+				break;
+			}
+			
 			int random =(int)(Math.random()*100);
 			Server newThread = new Server(this.mode,packetR);
 			newThread.start();

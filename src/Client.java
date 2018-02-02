@@ -18,11 +18,10 @@ public class Client extends Thread
 	boolean shutoff = false;
 	
 	
-	public Client(boolean mode)
+	public Client(boolean mode,boolean shutoff)
 	{
 		this.mode = mode;
-		
-		
+		this.shutoff = shutoff;
 	}
 	
 	public void run()
@@ -42,37 +41,43 @@ public class Client extends Thread
 		DatagramPacket packetS = new DatagramPacket(new byte[12],12,localHostAddress,23);
 		DatagramPacket packetR = new DatagramPacket(new byte[4],4);
 		
-		for(int i = 1; i < 12; i++)
+		while(true)
 		{
 			byte[] toSend = new byte[12];//byte array to become packet data
 			//String string = "files.txt";
-			while(true) {
-				if(shutoff == false) {
-					System.out.println("Enter message.");
-					message = reader.next();
-					if(message != "") {
+			while(true) 
+			{
+				System.out.println("Enter message.");
+				message = reader.next();
+				if(message.toLowerCase().equals("quit"))
+				{
+						System.out.println("Shutting down server.");
+						shutoff = true;
 						break;
-					}
-						else if(message.toLowerCase().equals("quit"))
-					{
-							System.out.println("Shutting down server.");
-					}
-					else {
-						System.out.println("A message must be entered to procede.");
-					}
 				}
-				else{
-					message = "shutoff";
+				else if(message != "") {
 					break;
+				}
+				else {
+					System.out.println("A message must be entered to procede.");
 				}
 				
 			}
-			byte[] file = message.getBytes();
-			for(int j = 0; j < file.length; j++)
+			if(shutoff == true)
+			{
+				message = "ShutDown0000";
+				toSend = message.getBytes();
+				packetS.setData(toSend);
+			}
+			else
+			{
+				byte[] file = message.getBytes();
+				for(int j = 0; j < file.length; j++)
 				toSend[j+2] = file[j];//puts string into correct spot in byte array
-			toSend[0] = 0x00;
-			toSend[toSend.length-1] = 0x00;
-			
+				toSend[0] = 0x00;
+				toSend[toSend.length-1] = 0x00;
+			}
+			/*
 			if(i == 11){//makes invalid packet
 				toSend[1] = 0x00;
 				packetS.setData(toSend);
@@ -88,8 +93,9 @@ public class Client extends Thread
 				packetS.setData(toSend);
 				if(this.mode) {packetPrint.Print("Writing packet",packetS);}
 			}
-			
+			*/
 			socket.send(packetS);
+			if(shutoff == true) {break;}
 			//time passes here while waiting for response from server
 			socket.receive(packetR);
 			if(this.mode) {packetPrint.Print("Received from Host", packetR);}
