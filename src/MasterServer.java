@@ -30,7 +30,7 @@ public class MasterServer {
 			Server newThread = new Server(this.mode);
 			
 			
-			socketS.close();//closes the port
+			socketR.close();//closes the port
 		}
 	}
 }

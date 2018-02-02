@@ -12,9 +12,11 @@ import java.net.*;
 public class Client extends Thread
 {
 	boolean mode;
-	public Client(boolean mode)
+	String message;
+	public Client(boolean mode, String message)
 	{
 		this.mode = mode;
+		this.message = message;
 	}
 	
 	public void run()
@@ -37,8 +39,8 @@ public class Client extends Thread
 		for(int i = 1; i < 12; i++)
 		{
 			byte[] toSend = new byte[12];//byte array to become packet data
-			String string = "files.txt";
-			byte[] file = string.getBytes();
+			//String string = "files.txt";
+			byte[] file = message.getBytes();
 			for(int j = 0; j < file.length; j++)
 				toSend[j+2] = file[j];//puts string into correct spot in byte array
 			toSend[0] = 0x00;
