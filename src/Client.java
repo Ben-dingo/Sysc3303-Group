@@ -12,6 +12,7 @@ import java.net.*;
 import java.util.Scanner;
 public class Client extends Thread
 {
+	String function;
 	boolean mode;
 	String message;
 	Scanner reader = new Scanner(System.in);
@@ -45,8 +46,34 @@ public class Client extends Thread
 		{
 			byte[] toSend = new byte[12];//byte array to become packet data
 			//String string = "files.txt";
+			
 			while(true) 
 			{
+				if(shutoff == true) {break;}
+				System.out.println("Would you like to read write?");
+				String temp = reader.next();
+				if(temp.toLowerCase().equals("quit")){
+					System.out.println("Shutting down server.");
+					this.shutoff = true;
+					break;
+				}
+				else if(temp.toLowerCase().equals("read")) {
+					function = "read";
+					break;
+				}
+				
+				else if(temp.toLowerCase().equals("write")) {
+					function = "write";
+					break;
+				}
+				else {
+					System.out.println("Must be a read or a wrte request.");
+				}
+			}
+			
+			while(true) 
+			{
+				if(shutoff == true) {break;}
 				System.out.println("Enter message.");
 				message = reader.next();
 				if(message.toLowerCase().equals("quit"))
@@ -72,10 +99,26 @@ public class Client extends Thread
 			else
 			{
 				byte[] file = message.getBytes();
-				for(int j = 0; j < file.length; j++)
-				toSend[j+2] = file[j];//puts string into correct spot in byte array
-				toSend[0] = 0x00;
-				toSend[toSend.length-1] = 0x00;
+				for(int j = 0; j < file.length; j++) {
+					if(function.equals("read")) {
+						toSend[1] = 0x01;
+					}
+					else{
+						toSend[1] = 0x02;
+					}
+					
+					toSend[j+2] = file[j];//puts string into correct spot in byte array
+					toSend[0] = 0x00;
+					toSend[toSend.length-1] = 0x00;
+					packetS.setData(toSend);
+					
+				}
+				if(function.equals("read")) {
+					if(this.mode) {packetPrint.Print("Reading packet",packetS);}
+				}
+				else{
+					if(this.mode) {packetPrint.Print("Writing packet",packetS);}
+				}
 			}
 			/*
 			if(i == 11){//makes invalid packet
