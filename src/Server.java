@@ -11,11 +11,13 @@ import java.net.*;
 public class Server extends Thread
 {
 	boolean mode;
-	DatagramPacket packetR;
-	public Server(boolean mode,DatagramPacket packetR)
+	int ID;
+	DatagramSocket socketR;
+	public Server(boolean mode,DatagramSocket socketR,int ID)
 	{
 		this.mode = mode;
-		this.packetR = packetR;
+		this.socketR = socketR;
+		this.ID = ID;
 	}
 	
 	public void run()
@@ -29,11 +31,12 @@ public class Server extends Thread
 
 	public void ServerPurpose() throws Exception
 	{
-		DatagramSocket socketR = new DatagramSocket();
-		DatagramPacket packetS = new DatagramPacket(new byte[4],4);
+		DatagramPacket packetR = new DatagramPacket(new byte[12],12);
+		InetAddress localHostAddress = InetAddress.getLocalHost();
+		DatagramPacket packetS = new DatagramPacket(new byte[4],4,localHostAddress,23);
+		socketR.receive(packetR);
 		if(this.mode) {packetPrint.Print("Received from Host", packetR);}
 		byte[] received = packetR.getData();
-		
 		if(received[1] == 0x01)//if its a reading packet
 		{
 			byte[] returning = new byte[]{0x00,0x03,0x00,0x01};
@@ -47,10 +50,13 @@ public class Server extends Thread
 		else {throw new Exception("InvalidException");}//if it's invalid
 		
 		if(this.mode) {packetPrint.Print("Returning to Host", packetS);}
-		packetS.setPort(packetR.getPort());
-		packetS.setAddress(InetAddress.getLocalHost());//gets info on how to reach host from packet received prior
-		DatagramSocket socketS = new DatagramSocket();
-		socketS.send(packetS);
-		socketS.close();//closes the port
+		socketR.send(packetS);
+		socketR.close();
+		Thread.currentThread().interrupt();
+	}
+	
+	public int getID()
+	{
+		return this.ID;
 	}
 }

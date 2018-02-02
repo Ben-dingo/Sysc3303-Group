@@ -3,6 +3,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.ArrayList;
 
 public class MasterServer extends Thread
 {	
@@ -35,14 +36,16 @@ public class MasterServer extends Thread
 			{
 				System.out.println("MasterServer understands");
 				socketR.close();
+				Thread.currentThread().interrupt();
 				break;
 			}
 			
-			int random =(int)(Math.random()*100);
-			Server newThread = new Server(this.mode,packetR);
+			DatagramSocket newSocket = new DatagramSocket();
+			packetR.setPort(newSocket.getLocalPort());
+			Server newThread = new Server(this.mode,newSocket,newSocket.getLocalPort());
+			if(mode) {System.out.println("a new server has been made with ID " + newSocket.getLocalPort());}
 			newThread.start();
-			
-			socketR.close();//closes the port
+			socketR.send(packetR);
 		}
 	}
 }
