@@ -87,6 +87,7 @@ public class Client extends Thread
 				}
 				else {
 					System.out.println("A message must be entered to procede.");
+					break;
 				}
 				
 			}
