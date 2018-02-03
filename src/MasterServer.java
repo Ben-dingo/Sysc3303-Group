@@ -32,7 +32,7 @@ public class MasterServer extends Thread
 			socketR.receive(packetR);
 			
 			String message = new String(packetR.getData());
-			if(message.equals("ShutDown0000"))
+			if(message.equals("00ShutDown00"))
 			{
 				System.out.println("MasterServer understands");
 				socketR.close();
