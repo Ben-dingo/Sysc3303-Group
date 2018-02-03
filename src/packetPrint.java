@@ -9,7 +9,7 @@ import java.net.DatagramPacket;
 import java.nio.charset.StandardCharsets;
 
 public class packetPrint
-{		
+{
 		public static void Print(String info, DatagramPacket packet)
 		{	
 			boolean fileprint = false;
