@@ -1,11 +1,11 @@
 /*****************************************************************************
  * @Author: Ben St.Pierre
- * @Updated: Saturday January 20th, 2018
+ * @Updated: Saturday February 3rd, 2018 by Jozef Tierney
  * 
- * @Purpose: This class is meant to send 11 datagramPackets to the local
- * host class who then sends it to the server, then receive packets back
- * from the server. 5 read packets, 5 write packets, and 1 invalid packet
- * are to be sent.
+ * @Purpose: This class is meant to send datagramPackets to the Error sim class
+ * who then sends it to the server, then receive packets back from the server.
+ * The user is now prompted to create the packets themselves, WRQ, RRQ, and
+ * Termination packets can be sent
  */
 
 import java.net.*;
@@ -18,13 +18,15 @@ public class Client extends Thread
 	Scanner reader = new Scanner(System.in);
 	boolean shutoff = false;
 	
-	
+	//creates client thread
 	public Client(boolean mode,boolean shutoff)
 	{
 		this.mode = mode;
 		this.shutoff = shutoff;
 	}
 	
+	//below is the method that runs when the thread starts, it just
+	//catches errors in the method it calls
 	public void run()
 	{
 		try {
@@ -40,18 +42,19 @@ public class Client extends Thread
 		InetAddress localHostAddress = InetAddress.getLocalHost();
 		
 		DatagramPacket packetS = new DatagramPacket(new byte[12],12,localHostAddress,23);
-		DatagramPacket packetR = new DatagramPacket(new byte[1],1);
+		DatagramPacket packetR = new DatagramPacket(new byte[1],1);//all packets and sockets created
 		
 		while(true)
 		{
 			byte[] toSend = new byte[12];//byte array to become packet data
-			//String string = "files.txt";
+			//currently byte array is only 12 bytes long this is due to issues with
+			//this will be dealt with in iteration 2
 			
 			while(true) 
 			{
 				if(shutoff == true) {break;}
 				System.out.println("Would you like to read, write or quit?");
-				String temp = reader.next();
+				String temp = reader.next();//prompts user for input
 				if(temp.toLowerCase().equals("quit")){
 					System.out.println("Shutting down server.");
 					this.shutoff = true;
@@ -90,7 +93,7 @@ public class Client extends Thread
 				}
 				
 			}
-			if(shutoff == true)
+			if(shutoff == true)//performs shutdown for all running threads
 			{
 				message = "00ShutDown00";
 				toSend = message.getBytes();

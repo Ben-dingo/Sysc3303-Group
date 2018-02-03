@@ -1,24 +1,15 @@
-import java.io.UnsupportedEncodingException;
+/*****************************************************************************
+ * @Author: Omar Dawoud
+ * @Updated: Saturday February 3rd, 2018
+ * 
+ * @Purpose: This class receives print requests from all the thread classes
+ * it prints various information depending on the packet received
+ */
 import java.net.DatagramPacket;
 import java.nio.charset.StandardCharsets;
 
 public class packetPrint
-{
-	//basic method to system.out.print() packet info in both string and byte form
-		public static void printPacket(String info, DatagramPacket packet)
-		{
-			byte[] received = packet.getData();
-			System.out.println(info + " as String: " + new String(received));
-			//above print causes issue where bytes for 0,1, and 2 show as squares but seems better than alternative
-			//System.out.println(info + " as String: " + received);//the alternative
-			System.out.print(info + " as Bytes: ");
-			for(int j = 0; j < received.length; j++)
-			{
-				System.out.format("%02X ", received[j]);
-			}
-			System.out.print("\n");
-		}
-		
+{		
 		public static void Print(String info, DatagramPacket packet)
 		{	
 			boolean fileprint = false;
@@ -37,22 +28,21 @@ public class packetPrint
 			System.out.println("Port number: " + packet.getPort());
 			
 			String packetType = "";
-			String packetName = "NaN";
 			
 			
 			if(received.length == 1) {
 				if(received[0] == 0x00) 
-					packetType = "DATA";
+					packetType = "DATA";//Data block, currently just a packet
 				
 				else if(received[0] == 0x01)
-					packetType = "ACK";
+					packetType = "ACK";//Acknowledge block, currently just a packet
 			}
 			else if(received[1] == 0x01) {
-					packetType = "RRQ";
+					packetType = "RRQ";//Read request
 					fileprint = true;
 			}
 			else if(received[1] == 0x02) {
-					packetType = "WRQ";
+					packetType = "WRQ";//write request
 					fileprint = true;
 			}
 		

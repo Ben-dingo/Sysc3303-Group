@@ -1,12 +1,13 @@
 /*****************************************************************************
  * @Author: Ben St.Pierre
- * @Updated: Saturday January 20th, 2018
+ * @Updated: Saturday February 3rd, 2018
  * 
  * @Purpose: This class is meant to function as a middle man between the
  * server class and the client class, it receives packets from the client, 
  * prints the data, and sends the packets to the server. The server then
  * sends a new packet which is to be printed just like the other packet then
- * sent over to the client. 
+ * sent over to the client. For iteration 1 this only passes packets but later
+ * it will cause errors in the packets
  */
 import java.net.*;
 public class ErrorSim extends Thread
@@ -17,6 +18,8 @@ public class ErrorSim extends Thread
 		this.mode = mode;
 	}
 	
+	//below is the method that runs when the thread starts, it just
+	//catches errors in the method it calls
 	public void run()
 	{
 		try {
@@ -35,15 +38,15 @@ public class ErrorSim extends Thread
 			
 			while(true)
 			{
-				socketR.receive(packetR);
+				socketR.receive(packetR);//receives packet from client
 				if(this.mode) {packetPrint.Print("Received from Client",packetR);}
 				
 				DatagramPacket packetS = new DatagramPacket(packetR.getData(),packetR.getLength(),localHostAddress,69);
 				if(this.mode) {packetPrint.Print("Sending to Server",packetS);}
-				socketS.send(packetS);
+				socketS.send(packetS);//passes packet along
 				
 				String message = new String(packetR.getData());
-				if(message.equals("00ShutDown00"))
+				if(message.equals("00ShutDown00"))//if the packet was a shutdown this is where the thread ends
 				{
 					System.out.println("ErrorSim understands");
 					socketR.close();
@@ -52,15 +55,12 @@ public class ErrorSim extends Thread
 				}
 				
 				DatagramPacket ServerPacketR = new DatagramPacket(new byte[1],1);
-				socketR.receive(ServerPacketR);
+				socketR.receive(ServerPacketR);//receives response packet from server
 				if(this.mode) {packetPrint.Print("Received from Server", ServerPacketR);}
 				
 				DatagramPacket ServerPacketS = new DatagramPacket(ServerPacketR.getData(),ServerPacketR.getLength(),localHostAddress,packetR.getPort());
-				DatagramSocket HostSocketS = new DatagramSocket();//makes socket specifically for next send
 				if(this.mode) {packetPrint.Print("Sending to Client",ServerPacketS);}
-				HostSocketS.send(ServerPacketS);
-				
-				
+				socketS.send(ServerPacketS);//sends response to client
 			}
 	}
 }
