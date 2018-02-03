@@ -43,7 +43,7 @@ public class ErrorSim extends Thread
 				socketS.send(packetS);
 				
 				String message = new String(packetR.getData());
-				if(message.equals("ShutDown0000"))
+				if(message.equals("00ShutDown00"))
 				{
 					System.out.println("ErrorSim understands");
 					socketR.close();
@@ -51,7 +51,7 @@ public class ErrorSim extends Thread
 					break;
 				}
 				
-				DatagramPacket ServerPacketR = new DatagramPacket(new byte[4],4);
+				DatagramPacket ServerPacketR = new DatagramPacket(new byte[1],1);
 				socketR.receive(ServerPacketR);
 				if(this.mode) {packetPrint.Print("Received from Server", ServerPacketR);}
 				

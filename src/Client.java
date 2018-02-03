@@ -40,7 +40,7 @@ public class Client extends Thread
 		InetAddress localHostAddress = InetAddress.getLocalHost();
 		
 		DatagramPacket packetS = new DatagramPacket(new byte[12],12,localHostAddress,23);
-		DatagramPacket packetR = new DatagramPacket(new byte[4],4);
+		DatagramPacket packetR = new DatagramPacket(new byte[1],1);
 		
 		while(true)
 		{
@@ -93,7 +93,7 @@ public class Client extends Thread
 			}
 			if(shutoff == true)
 			{
-				message = "ShutDown0000";
+				message = "00ShutDown00";
 				toSend = message.getBytes();
 				packetS.setData(toSend);
 				socket.send(packetS);
@@ -115,7 +115,6 @@ public class Client extends Thread
 					toSend[0] = 0x00;
 					toSend[toSend.length-1] = 0x00;
 					packetS.setData(toSend);
-					
 				}
 				if(function.equals("read")) {
 					if(this.mode) {packetPrint.Print("Reading packet",packetS);}

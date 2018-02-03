@@ -33,23 +33,23 @@ public class Server extends Thread
 	{
 		DatagramPacket packetR = new DatagramPacket(new byte[12],12);
 		InetAddress localHostAddress = InetAddress.getLocalHost();
-		DatagramPacket packetS = new DatagramPacket(new byte[4],4,localHostAddress,23);
+		DatagramPacket packetS = new DatagramPacket(new byte[1],1,localHostAddress,23);
 		socketR.receive(packetR);
-		if(this.mode) {packetPrint.Print("Received from Host", packetR);}
+		if(this.mode) {packetPrint.Print("Received from MasterServer", packetR);}
 		byte[] received = packetR.getData();
 		if(received[1] == 0x01)//if its a reading packet
 		{
-			byte[] returning = new byte[]{0x00,0x03,0x00,0x01};
+			byte[] returning = new byte[]{0x00};
 			packetS.setData(returning);
 		}
 		else if(received[1] == 0x02)//if its a writing packet
 		{
-			byte[] returning = new byte[]{0x00,0x04,0x00,0x01};
+			byte[] returning = new byte[]{0x01};
 			packetS.setData(returning);
 		}
 		else {throw new Exception("InvalidException");}//if it's invalid
 		
-		if(this.mode) {packetPrint.Print("Returning to Host", packetS);}
+		if(this.mode) {packetPrint.Print("Sending to Host", packetS);}
 		socketR.send(packetS);
 		socketR.close();
 		Thread.currentThread().interrupt();

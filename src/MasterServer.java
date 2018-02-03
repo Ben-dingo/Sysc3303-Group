@@ -26,13 +26,15 @@ public class MasterServer extends Thread
 	{
 		DatagramSocket socketR = new DatagramSocket(69,InetAddress.getLocalHost());
 		DatagramPacket packetR = new DatagramPacket(new byte[12],12);
+		DatagramPacket packetS = packetR;
 		
 		while(true)
 		{
 			socketR.receive(packetR);
+			if(this.mode) {packetPrint.Print("Received from Host",packetR);}
 			
 			String message = new String(packetR.getData());
-			if(message.equals("ShutDown0000"))
+			if(message.equals("00ShutDown00"))
 			{
 				System.out.println("MasterServer understands");
 				socketR.close();
@@ -41,11 +43,12 @@ public class MasterServer extends Thread
 			}
 			
 			DatagramSocket newSocket = new DatagramSocket();
-			packetR.setPort(newSocket.getLocalPort());
+			packetS.setPort(newSocket.getLocalPort());
 			Server newThread = new Server(this.mode,newSocket,newSocket.getLocalPort());
 			if(mode) {System.out.println("a new server has been made with ID " + newSocket.getLocalPort());}
 			newThread.start();
-			socketR.send(packetR);
+			if(this.mode) {packetPrint.Print("Sending to sub server",packetS);}
+			socketR.send(packetS);
 		}
 	}
 }
