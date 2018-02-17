@@ -1,12 +1,17 @@
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-
+import java.net.DatagramPacket;
+/***
+ * 
+ * @author Noor Ncho
+ *
+ */
 public class ErrorHandeler {
 
-	Client c;
 	private int errorcode;
 
-	public ErrorHandeler(Client c) {
-		this.c = c;
+	public ErrorHandeler() {
+		
 	}
 
 	private void errorExtract(byte[] data) {
@@ -24,7 +29,6 @@ public class ErrorHandeler {
 			System.out.println("Error Code 06: File already Exists");
 			System.out.println("Please try again.");
 		}
-		c.ui();
 	}
 
 	/***
@@ -57,12 +61,31 @@ public class ErrorHandeler {
 			}
 			// Error Code 2
 			if (!file.canWrite()) {
+				errorcode = 2;
 				return false;
 			}
 
 			// Error Code 3 - no space on disk
+			if(file.getUsableSpace() < file.length()) {
+				errorcode = 3;
+				return false;
+			}
 
 		}
 		return true;
 	}
+	
+	/**
+	 * Creates an error packet that would be sent back contain the realive error code.
+	 * @return
+	 */
+	public DatagramPacket makeErrorPacket() {
+		byte[]error = new byte[1];
+		ByteArrayOutputStream errorc = new ByteArrayOutputStream();
+		errorc.write(errorcode);
+		error = errorc.toByteArray();
+		DatagramPacket errorPacket = new DatagramPacket(error, error.length);
+		return errorPacket;
+	}
+	
 }
