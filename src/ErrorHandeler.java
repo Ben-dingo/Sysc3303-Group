@@ -2,6 +2,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.DatagramPacket;
 /***
+ * This class is responsible for handeling the TFTP errors, with codes 1, 2, 3 and 6
  * 
  * @author Noor Ncho
  *
