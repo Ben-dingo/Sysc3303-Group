@@ -20,7 +20,7 @@ public class packetFile{
 	public String importText(String directory) {
 
 		File f = new File(directory); //Obtain the file from the directory.
-
+		
 		try {
 			BufferedReader out = new BufferedReader(new FileReader(f)); //Create an output reader using the FileReader format.
 			Scanner input = new Scanner(f); //Used to check if there are extra lines within the text document.
@@ -31,6 +31,7 @@ public class packetFile{
 				if (input.hasNextLine()) { //If there is a next line in the text document, move to it.
 					String line = input.nextLine();
 					s = s + line + "\n";
+							
 				} else
 					check = false; //Flag this when the end line of the document is reached.
 			}
@@ -46,22 +47,13 @@ public class packetFile{
 	/**
 	 * Exports the data in the form of a text document.
 	 */
-	public void exportText(Client c) {
+	public void exportText(String s) {
 		try {
-			String s = c.toString();
 			BufferedWriter out = new BufferedWriter(new FileWriter("myFile.txt"));
 			out.write(s);
 			out.close();
 		} catch (IOException e1) {
-			System.out.println("error");
+			System.out.println("error exporting file!");
 		}
-	}
-
-	public static void main(String[] args) {
-
-		packetFile p = new packetFile();
-
-		String f = "C:\\Users\\Omard\\Desktop\\myFile.txt";
-		System.out.println(p.importText(f));
 	}
 }

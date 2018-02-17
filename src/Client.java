@@ -36,7 +36,9 @@ public class Client extends Thread
 		}
 	}
 	
-	//Added method toString() : Omar Dawoud
+	/**
+	 * Returns a string representation of the client data.
+	 */
 	public String toString() {
 		String s = "Function: " + "\n" + function + "\n";
 		s = s + "Message: " + "\n" + message + "\n";
