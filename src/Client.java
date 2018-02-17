@@ -36,6 +36,13 @@ public class Client extends Thread
 		}
 	}
 	
+	//Added method toString() : Omar Dawoud
+	public String toString() {
+		String s = "Function: " + "\n" + function + "\n";
+		s = s + "Message: " + "\n" + message + "\n";
+		return s;
+	}
+	
 	public void ClientPurpose() throws Exception
 	{
 		DatagramSocket socket = new DatagramSocket();
