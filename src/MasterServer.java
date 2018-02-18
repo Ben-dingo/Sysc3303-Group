@@ -31,7 +31,7 @@ public class MasterServer extends Thread
 	public void MasterPurpose() throws Exception
 	{
 		DatagramSocket socketR = new DatagramSocket(69,InetAddress.getLocalHost());
-		DatagramPacket packetR = new DatagramPacket(new byte[12],12);
+		DatagramPacket packetR = new DatagramPacket(new byte[512],512);
 		DatagramPacket packetS = packetR;
 		
 		while(true)

@@ -34,7 +34,7 @@ public class ErrorSim extends Thread
 			DatagramSocket socketR = new DatagramSocket(23,InetAddress.getLocalHost());
 			DatagramSocket socketS = new DatagramSocket();
 			InetAddress localHostAddress = InetAddress.getLocalHost();
-			DatagramPacket packetR = new DatagramPacket(new byte[12],12);
+			DatagramPacket packetR = new DatagramPacket(new byte[512],512);
 			
 			while(true)
 			{

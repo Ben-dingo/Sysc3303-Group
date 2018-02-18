@@ -16,9 +16,10 @@ public class packetPrint
 			byte[] received = packet.getData();
 			
 			String filename = new String(packet.getData(),StandardCharsets.UTF_8);
+			packetLength(packet);
 			
 			System.out.print(info + " as Bytes: ");
-			for(int j = 0; j < received.length; j++)
+			for(int j = 0; j < packet.getLength(); j++)
 			{
 				System.out.format("%02X ", received[j]);
 			}
@@ -53,5 +54,27 @@ public class packetPrint
 			System.out.println("Packet Length: " + packet.getLength());
 			if(fileprint){System.out.println("Filename: " + filename);}
 			System.out.println("Mode: Verbose");
+		}
+		
+		public static void packetLength(DatagramPacket packet)
+		{
+			boolean one = false;
+			byte[] received = packet.getData();
+			for(int j = 0; j < received.length; j++)
+			{
+				if(received[j] == 0x00 && one == false)
+				{
+					one = true;
+				}
+				else if (received[j] == 0x00 && one == true)
+				{
+					packet.setLength(j);
+					break;
+				}
+				else
+				{
+					one = false;
+				}
+			}
 		}
 }

@@ -48,12 +48,12 @@ public class Client extends Thread
 		DatagramSocket socket = new DatagramSocket();
 		InetAddress localHostAddress = InetAddress.getLocalHost();
 		
-		DatagramPacket packetS = new DatagramPacket(new byte[12],12,localHostAddress,23);
+		DatagramPacket packetS = new DatagramPacket(new byte[512],512,localHostAddress,23);
 		DatagramPacket packetR = new DatagramPacket(new byte[1],1);//all packets and sockets created
 		
 		while(true)
 		{
-			byte[] toSend = new byte[12];//byte array to become packet data
+			//byte array to become packet data
 			//currently byte array is only 12 bytes long this is due to issues with
 			//this will be dealt with in iteration 2
 			
@@ -103,8 +103,9 @@ public class Client extends Thread
 			if(shutoff == true)//performs shutdown for all running threads
 			{
 				message = "00ShutDown00";
-				toSend = message.getBytes();
+				byte[] toSend = message.getBytes();
 				packetS.setData(toSend);
+				packetS.setLength(12);
 				socket.send(packetS);
 				Thread.currentThread().interrupt();
 				break;
@@ -112,6 +113,7 @@ public class Client extends Thread
 			else
 			{
 				byte[] file = message.getBytes();
+				byte[] toSend = new byte[file.length + 3];
 				for(int j = 0; j < file.length; j++) {
 					if(function.equals("read")) {
 						toSend[1] = 0x01;
@@ -119,11 +121,11 @@ public class Client extends Thread
 					else{
 						toSend[1] = 0x02;
 					}
-					
 					toSend[j+2] = file[j];//puts string into correct spot in byte array
 					toSend[0] = 0x00;
 					toSend[toSend.length-1] = 0x00;
 					packetS.setData(toSend);
+					packetS.setLength(toSend.length);
 				}
 				if(function.equals("read")) {
 					if(this.mode) {packetPrint.Print("Reading packet",packetS);}

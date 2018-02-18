@@ -35,7 +35,7 @@ public class Server extends Thread
 
 	public void ServerPurpose() throws Exception
 	{
-		DatagramPacket packetR = new DatagramPacket(new byte[12],12);
+		DatagramPacket packetR = new DatagramPacket(new byte[512],512);
 		InetAddress localHostAddress = InetAddress.getLocalHost();
 		DatagramPacket packetS = new DatagramPacket(new byte[1],1,localHostAddress,23);
 		socketR.receive(packetR);
