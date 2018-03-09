@@ -1,6 +1,7 @@
+
 /*****************************************************************************
- * @Author: Ben St.Pierre
- * @Updated: Saturday February 3rd, 2018
+ * @Author: Ben St.Pierre & Noor Ncho
+ * @Updated: March 9th, 2018
  * 
  * @Purpose: This class is meant to function as a middle man between the
  * server class and the client class, it receives packets from the client, 
@@ -10,11 +11,17 @@
  * it will cause errors in the packets
  */
 import java.net.*;
-public class ErrorSim extends Thread
-{
+import java.util.*;
+
+public class ErrorSim extends Thread {
 	boolean mode;
-	public ErrorSim(boolean mode)
-	{
+	Random rand;
+
+	public ErrorSim() {
+
+	}
+
+	public ErrorSim(boolean mode) {
 		this.mode = mode;
 	}
 	
@@ -61,6 +68,83 @@ public class ErrorSim extends Thread
 				DatagramPacket ServerPacketS = new DatagramPacket(ServerPacketR.getData(),ServerPacketR.getLength(),localHostAddress,packetR.getPort());
 				if(this.mode) {packetPrint.Print("Sending to Client",ServerPacketS);}
 				socketS.send(ServerPacketS);//sends response to client
+
 			}
+
+			DatagramPacket ServerPacketS = new DatagramPacket(ServerPacketR.getData(), ServerPacketR.getLength(),
+					localHostAddress, packetR.getPort());
+			DatagramSocket HostSocketS = new DatagramSocket();// makes socket specifically for next send
+			if (this.mode) {
+				packetPrint.Print("Sending to Client", ServerPacketS);
+			}
+			HostSocketS.send(ServerPacketS);
+
+		}
+	}
+
+	public void errorInterface() {
+		System.out.println("What do you want to simulate?");
+		System.out.println("1: lose a packet     2: delay a packet    3: duplicate a packet");
+		Scanner s = new Scanner(System.in);
+		String input = s.nextLine();
+
+		switch (input) {
+		case "1":
+			int type = rand.nextInt((3 - 1) + 1) + 1;
+			lostSimError(type);
+			break;
+		case "2":
+			System.out.println("Not yet implemented");
+			// delaySimError();
+			break;
+		case "3":
+			System.out.println("Not yet implemented");
+			break;
+		}
+	}
+
+	public void lostSimError(int type) {
+		DatagramPacket simServer, simClient;
+		DatagramSocket simSocket;
+		try {
+			simSocket = new DatagramSocket();
+		} catch (SocketException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+
+		System.out.println("A packet has been lost");
+
+		switch (type) {
+		case 1:
+			break;
+		case 2:
+			System.out.println("An ACK packet seems to have been lost.");
+			break;
+		case 3:
+			System.out.println("A DATA packet seems to have been lost.");
+			break;
+		}
+
+	}
+
+	public void delaySimError() {
+		System.out.println("Not yet implemented");
+	}
+
+	/**************************************************************************/
+	public static void main(String[] args) {
+
+		ErrorSim e = new ErrorSim();
+		Scanner scan = new Scanner(System.in);
+		String s = scan.nextLine();
+
+		System.out.println("What function do you want to operate in?");
+		System.out.println("(N)ormal mode or (E)rror Sim mode?");
+		if (s.equalsIgnoreCase("N")) {
+			System.out.println("Waiting to receive packets for forwarding.. ");
+		} else if (s.equalsIgnoreCase("E")) {
+			e.errorInterface();
+		}
 	}
 }
