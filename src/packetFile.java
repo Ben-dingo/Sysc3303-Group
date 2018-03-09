@@ -45,7 +45,7 @@ public class packetFile{
 	/**
 	 * Exports the data in the form of a text document.
 	 */
-	public void exportText(String s) {
+	public static void exportText(String s) {
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter("myFile.txt"));
 			out.write(s);
@@ -53,5 +53,16 @@ public class packetFile{
 		} catch (IOException e1) {
 			System.out.println("error exporting file!");
 		}
+	}
+	
+	/**
+	 * Adds new information to an existing text document.
+	 */
+	public static void modifyText(String directory, String newText) {
+		
+		String existingText = importText(directory);
+		
+		if(!existingText.equals("error")) 
+			existingText.concat("\n"+ newText);	
 	}
 }
