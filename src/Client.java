@@ -97,7 +97,7 @@ public class Client extends Thread
 				}
 				else if(!message.equals("")) {
 					message = (packetFile.importText(message));
-					while(message.equals("")) {
+					while(message.equals("error")) {
 						System.out.println("Error importing file from directory!");
 						System.out.println("Input a valid directory.");
 						message = (packetFile.importText(reader.next()));

@@ -38,7 +38,7 @@ public class packetFile{
 			return s; //Return the data extracted.
 			
 		} catch (IOException e1) {
-			return "";
+			return "error";
 		}
 	}
 
