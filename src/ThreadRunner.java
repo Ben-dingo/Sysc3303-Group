@@ -34,9 +34,10 @@ public class ThreadRunner
 		}
 		
 		
-		Client clientThread = new Client(mode,shutoff);
+		
 		MasterServer serverThread = new MasterServer(mode);
 		ErrorSim ErrorSimThread = new ErrorSim(mode);
+		Client clientThread = new Client(mode,shutoff);
 		
 		serverThread.start();
 		ErrorSimThread.start();

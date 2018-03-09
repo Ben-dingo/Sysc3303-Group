@@ -17,6 +17,8 @@ public class Client extends Thread
 	String message;
 	Scanner reader = new Scanner(System.in);
 	boolean shutoff = false;
+	ErrorHandeler eh = new ErrorHandeler();
+	String fname = "file.txt";
 	
 	
 	public Client(boolean mode,boolean shutoff)
