@@ -17,7 +17,7 @@ public class packetFile{
 	 * @param directory --> The location of the text file.
 	 * @return the data within the text file.
 	 */
-	public String importText(String directory) {
+	public static String importText(String directory) {
 
 		File f = new File(directory); //Obtain the file from the directory.
 		
@@ -38,16 +38,14 @@ public class packetFile{
 			return s; //Return the data extracted.
 			
 		} catch (IOException e1) {
-			System.out.println("error");
+			return "error";
 		}
-		return ""; //Returns nothing if failed to extract data.
-
 	}
 
 	/**
 	 * Exports the data in the form of a text document.
 	 */
-	public void exportText(String s) {
+	public static void exportText(String s) {
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter("myFile.txt"));
 			out.write(s);
@@ -55,5 +53,17 @@ public class packetFile{
 		} catch (IOException e1) {
 			System.out.println("error exporting file!");
 		}
+	}
+	
+	/**
+	 * Adds new information to an existing text document.
+	 */
+	public static void modifyText(String directory, String newText) {
+		
+		String existingText = importText(directory);
+		
+		if(!existingText.equals("error")) 
+			existingText.concat("\n"+ newText);
+			exportText(existingText);
 	}
 }
