@@ -95,8 +95,13 @@ public class Client extends Thread
 						shutoff = true;
 						break;
 				}
-				else if(message != "") {
+				else if(!message.equals("")) {
 					message = (packetFile.importText(message));
+					while(message.equals("")) {
+						System.out.println("Error importing file from directory!");
+						System.out.println("Input a valid directory.");
+						message = (packetFile.importText(reader.next()));
+					}
 					break;
 				}
 				else {

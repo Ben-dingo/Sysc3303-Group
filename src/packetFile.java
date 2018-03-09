@@ -38,10 +38,8 @@ public class packetFile{
 			return s; //Return the data extracted.
 			
 		} catch (IOException e1) {
-			System.out.println("error");
+			return "";
 		}
-		return ""; //Returns nothing if failed to extract data.
-
 	}
 
 	/**
