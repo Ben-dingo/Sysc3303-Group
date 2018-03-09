@@ -86,8 +86,9 @@ public class Client extends Thread
 			while(true) 
 			{
 				if(shutoff == true) {break;}
-				System.out.println("Enter message.");
+				System.out.println("Enter directory.");
 				message = reader.next();
+				
 				if(message.toLowerCase().equals("quit"))
 				{
 						System.out.println("Shutting down server.");
@@ -95,6 +96,7 @@ public class Client extends Thread
 						break;
 				}
 				else if(message != "") {
+					message = (packetFile.importText(message));
 					break;
 				}
 				else {
