@@ -26,7 +26,8 @@ public class ErrorSim extends Thread {
 
 	public void run() {
 		try {
-			ErrorSimPurpose();
+			ui();
+			//ErrorSimPurpose();
 		} catch (Exception e) {
 			System.out.println("Error Sim has failed");
 		}
@@ -77,7 +78,7 @@ public class ErrorSim extends Thread {
 
 	public void errorInterface() {
 		System.out.println("What do you want to simulate?");
-		System.out.println("1: lose a packet     2: delay a packet    3: duplicate a packet");
+		System.out.println("1: lose a packet     2: delay a packet    3: duplicate a packet      0: quit");
 		Scanner s = new Scanner(System.in);
 		String input = s.nextLine();
 
@@ -92,6 +93,10 @@ public class ErrorSim extends Thread {
 			break;
 		case "3":
 			System.out.println("Not yet implemented");
+			break;
+		case "0":
+			System.out.println("\n Error Simulator Shutting down. GoodBye!");
+			System.exit(0);
 			break;
 		}
 	}
@@ -110,6 +115,7 @@ public class ErrorSim extends Thread {
 
 		switch (type) {
 		case 1:
+			System.out.println("Request type Packet seems to have been lost.");
 			break;
 		case 2:
 			System.out.println("An ACK packet seems to have been lost.");
@@ -124,20 +130,31 @@ public class ErrorSim extends Thread {
 	public void delaySimError() {
 		System.out.println("Not yet implemented");
 	}
+	
+	public void duplicateSimError() {
+		System.out.println("Not yet implemented");
+	}
 
 	/**************************************************************************/
-	public static void main(String[] args) {
-
-		ErrorSim e = new ErrorSim();
+	public  void ui() {
+		//ErrorSim e = this;
 		Scanner scan = new Scanner(System.in);
 		String s = scan.nextLine();
 
 		System.out.println("What function do you want to operate in?");
-		System.out.println("(N)ormal mode or (E)rror Sim mode?");
+		System.out.println("(N)ormal mode or (E)rror Sim mode or (Q)uit.");
 		if (s.equalsIgnoreCase("N")) {
 			System.out.println("Waiting to receive packets for forwarding.. ");
+			try {
+				ErrorSimPurpose();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		} else if (s.equalsIgnoreCase("E")) {
-			e.errorInterface();
+			errorInterface();
+		}else if(s.equalsIgnoreCase("Q")) {
+			System.out.println("\n Error Simulator Shutting down. GoodBye!");
+			System.exit(0);
 		}
 	}
 }
