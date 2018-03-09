@@ -1,3 +1,10 @@
+/*****************************************************************************
+ * @Author: Ben St.Pierre
+ * @Updated: Saturday February 3rd, 2018
+ * 
+ * @Purpose: This class prompts the user for what mode they would like to use.
+ * It then sets up the 3 main threads used in this iteration
+ */
 import java.util.Scanner;
 
 public class ThreadRunner
@@ -9,7 +16,7 @@ public class ThreadRunner
 		String message;
 		Scanner reader = new Scanner(System.in);
 		System.out.println("Server started.\nEnter 'Quit' to shut down server.");
-		while(true)
+		while(true)//prompts user for input
 		{
 			
 			System.out.println("'Quiet' or 'Verbose'?");
@@ -38,9 +45,8 @@ public class ThreadRunner
 		MasterServer serverThread = new MasterServer(mode);
 		ErrorSim ErrorSimThread = new ErrorSim(mode);
 		Client clientThread = new Client(mode,shutoff);
-		
 		serverThread.start();
 		ErrorSimThread.start();
-		clientThread.start();
+		clientThread.start();//runs threads
 	}
 }
