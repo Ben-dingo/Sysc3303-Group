@@ -2,6 +2,7 @@
 /*****************************************************************************
  * @Author: Ben St.Pierre & Noor Ncho
  * @Updated: March 9th, 2018
+
  * 
  * @Purpose: This class is meant to function as a middle man between the
  * server class and the client class, it receives packets from the client, 
@@ -29,6 +30,7 @@ public class ErrorSim extends Thread {
 	//catches errors in the method it calls
 	public void run()
 	{
+
 		try {
 			ui();
 			//ErrorSimPurpose();
@@ -36,6 +38,7 @@ public class ErrorSim extends Thread {
 			System.out.println("Error Sim has failed");
 		}
 	}
+
 	
 	public void ErrorSimPurpose() throws Exception
 	{
@@ -69,17 +72,6 @@ public class ErrorSim extends Thread {
 				DatagramPacket ServerPacketS = new DatagramPacket(ServerPacketR.getData(),ServerPacketR.getLength(),localHostAddress,packetR.getPort());
 				if(this.mode) {packetPrint.Print("Sending to Client",ServerPacketS);}
 				socketS.send(ServerPacketS);//sends response to client
-
-			}
-
-			DatagramPacket ServerPacketS = new DatagramPacket(ServerPacketR.getData(), ServerPacketR.getLength(),
-					localHostAddress, packetR.getPort());
-			DatagramSocket HostSocketS = new DatagramSocket();// makes socket specifically for next send
-			if (this.mode) {
-				packetPrint.Print("Sending to Client", ServerPacketS);
-			}
-			HostSocketS.send(ServerPacketS);
-
 		}
 	}
 
@@ -131,6 +123,12 @@ public class ErrorSim extends Thread {
 			System.out.println("A DATA packet seems to have been lost.");
 			break;
 		}
+		
+		for (int i = 0; i < 5000; i++) {
+			
+		}
+		System.out.println("Packet could not be found. Simulator has timed out!");
+		ui();
 
 	}
 
