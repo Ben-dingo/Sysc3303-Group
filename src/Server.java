@@ -8,7 +8,7 @@
  * server thread closes itself once it's handled one packet
  */
 import java.net.*;
-public class Server extends Thread
+public class Server extends Thread 
 {
 	boolean mode;
 	int ID;

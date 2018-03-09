@@ -8,15 +8,28 @@
  * Termination packets can be sent
  */
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.*;
-import java.util.Scanner;
-public class Client extends Thread
+import java.util.concurrent.Semaphore;
+
+import javax.swing.*;
+public class Client extends Thread implements ActionListener 
 {
 	String function;
 	boolean mode;
 	String message;
-	Scanner reader = new Scanner(System.in);
 	boolean shutoff = false;
+	
+	protected Semaphore sema = new Semaphore(0);
+	
+	protected JPanel pane;
+	protected JTextField textField = new JTextField(35);
+    protected JTextArea textArea = new JTextArea(10, 35);
+    
+    String input = "";
+    boolean updated = false;
 	
 	//creates client thread
 	public Client(boolean mode,boolean shutoff)
@@ -30,6 +43,7 @@ public class Client extends Thread
 	public void run()
 	{
 		try {
+			createAndShowGUI();
 			ClientPurpose();
 		} catch (Exception e) {
 			System.out.println("client has failed");
@@ -62,10 +76,11 @@ public class Client extends Thread
 			while(true) 
 			{
 				if(shutoff == true) {break;}
-				System.out.println("Would you like to read, write or quit?");
-				String temp = reader.next();//prompts user for input
+				textArea.append("Would you like to read, write or quit?\n");
+				sema.acquire();
+				String temp = input;
 				if(temp.toLowerCase().equals("quit")){
-					System.out.println("Shutting down server.");
+					textArea.append("Shutting down server.\n");
 					this.shutoff = true;
 					break;
 				}
@@ -79,18 +94,19 @@ public class Client extends Thread
 					break;
 				}
 				else {
-					System.out.println("Must be a read or a write request.");
+					textArea.append("Must be a read or a write request.\n");
 				}
 			}
 			
 			while(true) 
 			{
 				if(shutoff == true) {break;}
-				System.out.println("Enter message.");
-				message = reader.next();
+				textArea.append("Enter message.\n");
+				sema.acquire();
+				message = input;
 				if(message.toLowerCase().equals("quit"))
 				{
-						System.out.println("Shutting down server.");
+					textArea.append("Shutting down server.\n");
 						shutoff = true;
 						break;
 				}
@@ -98,7 +114,7 @@ public class Client extends Thread
 					break;
 				}
 				else {
-					System.out.println("A message must be entered to procede.");
+					textArea.append("A message must be entered to procede.\n");
 				}
 				
 			}
@@ -130,17 +146,49 @@ public class Client extends Thread
 					packetS.setLength(toSend.length);
 				}
 				if(function.equals("read")) {
-					if(this.mode) {packetPrint.Print("Reading packet",packetS);}
+					if(this.mode) {textArea.append(packetPrint.Print("Reading packet",packetS));}
 				}
 				else{
-					if(this.mode) {packetPrint.Print("Writing packet",packetS);}
+					if(this.mode) {textArea.append(packetPrint.Print("Writing packet",packetS));}
 				}
 			}
 			socket.send(packetS);
 			if(shutoff == true) {break;}
 			//time passes here while waiting for response from server
 			socket.receive(packetR);
-			if(this.mode) {packetPrint.Print("Received from Host", packetR);}
+			if(this.mode) {textArea.append(packetPrint.Print("Received from Host", packetR));}
 		}
 	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		input = textField.getText();
+        textArea.append(input + "\n");
+        textField.setText("");
+        updated = true;
+        
+        sema.release();
+        
+        textArea.setCaretPosition(textArea.getDocument().getLength());
+	}
+	
+	private void createAndShowGUI() {
+        JFrame frame = new JFrame("Client");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);
+        
+        textField.addActionListener(this);
+        textArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        
+        pane = new JPanel();
+        pane.setLayout(new BorderLayout());
+        pane.add(textField, BorderLayout.NORTH);
+        pane.add(scrollPane, BorderLayout.CENTER);
+        frame.add(pane);
+ 
+        frame.pack();
+        frame.setVisible(true);
+        frame.toFront();
+    }
 }

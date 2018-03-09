@@ -37,16 +37,21 @@ public class ThreadRunner
 				shutoff = true;
 				break;
 			}
-			else {System.out.println("input must be 'Quiet' or 'Verbose' case sensitive");}
+			else {System.out.println("input must be 'Quiet' or 'Verbose'");}
 		}
 		
+		System.out.println("How many Clients would you like to start?");
+		int selection = reader.nextInt();
+		for(int i = 1; i <= selection; i++)
+		{
+			Client clientThread = new Client(mode,shutoff);
+			clientThread.start();
+		}
 		
-		Client clientThread = new Client(mode,shutoff);
 		MasterServer serverThread = new MasterServer(mode);
 		ErrorSim ErrorSimThread = new ErrorSim(mode);//creates 3 threads
 		
 		serverThread.start();
-		ErrorSimThread.start();
-		clientThread.start();//runs threads
+		ErrorSimThread.start();//runs threads
 	}
 }

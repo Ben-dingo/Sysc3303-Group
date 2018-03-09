@@ -9,10 +9,30 @@
  * sent over to the client. For iteration 1 this only passes packets but later
  * it will cause errors in the packets
  */
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.*;
-public class ErrorSim extends Thread
+import java.util.concurrent.Semaphore;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+public class ErrorSim extends Thread implements ActionListener
 {
 	boolean mode;
+	
+	protected Semaphore sema = new Semaphore(0);
+	
+	protected JPanel pane;
+	protected JTextField textField = new JTextField(35);
+    protected JTextArea textArea = new JTextArea(10, 35);
+    
+    String input = "";
+    boolean updated = false;
+    
 	public ErrorSim(boolean mode)
 	{
 		this.mode = mode;
@@ -23,6 +43,7 @@ public class ErrorSim extends Thread
 	public void run()
 	{
 		try {
+			createAndShowGUI();
 			ErrorSimPurpose();
 		} catch (Exception e) {
 			System.out.println("Error Sim has failed");
@@ -39,10 +60,10 @@ public class ErrorSim extends Thread
 			while(true)
 			{
 				socketR.receive(packetR);//receives packet from client
-				if(this.mode) {packetPrint.Print("Received from Client",packetR);}
+				if(this.mode) {textArea.append(packetPrint.Print("Received from Client",packetR));}
 				
 				DatagramPacket packetS = new DatagramPacket(packetR.getData(),packetR.getLength(),localHostAddress,69);
-				if(this.mode) {packetPrint.Print("Sending to Server",packetS);}
+				if(this.mode) {textArea.append(packetPrint.Print("Sending to Server",packetS));}
 				socketS.send(packetS);//passes packet along
 				
 				String message = new String(packetR.getData());
@@ -56,11 +77,43 @@ public class ErrorSim extends Thread
 				
 				DatagramPacket ServerPacketR = new DatagramPacket(new byte[1],1);
 				socketR.receive(ServerPacketR);//receives response packet from server
-				if(this.mode) {packetPrint.Print("Received from Server", ServerPacketR);}
+				if(this.mode) {textArea.append(packetPrint.Print("Received from Server", ServerPacketR));}
 				
 				DatagramPacket ServerPacketS = new DatagramPacket(ServerPacketR.getData(),ServerPacketR.getLength(),localHostAddress,packetR.getPort());
-				if(this.mode) {packetPrint.Print("Sending to Client",ServerPacketS);}
+				if(this.mode) {textArea.append(packetPrint.Print("Sending to Client",ServerPacketS));}
 				socketS.send(ServerPacketS);//sends response to client
 			}
 	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		input = textField.getText();
+        textArea.append(input + "\n");
+        textField.setText("");
+        updated = true;
+        
+        sema.release();
+        
+        textArea.setCaretPosition(textArea.getDocument().getLength());
+	}
+	
+	private void createAndShowGUI() {
+        JFrame frame = new JFrame("ErrorSim");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);
+        
+        textField.addActionListener(this);
+        textArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        
+        pane = new JPanel();
+        pane.setLayout(new BorderLayout());
+        pane.add(textField, BorderLayout.NORTH);
+        pane.add(scrollPane, BorderLayout.CENTER);
+        frame.add(pane);
+ 
+        frame.pack();
+        frame.setVisible(true);
+        frame.toFront();
+    }
 }

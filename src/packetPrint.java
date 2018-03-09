@@ -10,23 +10,25 @@ import java.nio.charset.StandardCharsets;
 
 public class packetPrint
 {
-		public static void Print(String info, DatagramPacket packet)
+		public static String Print(String info, DatagramPacket packet)
 		{	
+			String returns = "\n";
+			
 			boolean fileprint = false;
 			byte[] received = packet.getData();
 			
 			String filename = new String(packet.getData(),StandardCharsets.UTF_8);
 			packetLength(packet);
 			
-			System.out.print(info + " as Bytes: ");
+			returns = (info + " as Bytes: ");
 			for(int j = 0; j < packet.getLength(); j++)
 			{
-				System.out.format("%02X ", received[j]);
+				returns += (received[j] + " ");
 			}
-			System.out.print("\n");
+			returns += ("\n");
 			
-			System.out.println("IP Address: " + packet.getAddress());
-			System.out.println("Port number: " + packet.getPort());
+			returns += ("IP Address: " + packet.getAddress() + "\n");
+			returns += ("Port number: " + packet.getPort() + "\n");
 			
 			String packetType = "";
 			
@@ -50,10 +52,12 @@ public class packetPrint
 			else
 				packetType = "ERROR";
 			
-			System.out.println("Packet type: " + packetType);
-			System.out.println("Packet Length: " + packet.getLength());
-			if(fileprint){System.out.println("Filename: " + filename);}
-			System.out.println("Mode: Verbose");
+			returns += ("Packet type: " + packetType + "\n");
+			returns += ("Packet Length: " + packet.getLength() + "\n");
+			if(fileprint){returns += ("Filename: " + filename + "\n");}
+			returns += ("Mode: Verbose\n");
+			
+			return returns;
 		}
 		
 		public static void packetLength(DatagramPacket packet)
