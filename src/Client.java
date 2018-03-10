@@ -101,7 +101,7 @@ public class Client extends Thread implements ActionListener
 			{
 				if(shutoff == true) {break;}
 				textArea.append("Enter directory.\n");
-				sema.acquire();
+				sema.acquire();//waits for user input
 				message = input;
 				if(message.toLowerCase().equals("quit"))
 				{
@@ -171,7 +171,7 @@ public class Client extends Thread implements ActionListener
         textArea.setCaretPosition(textArea.getDocument().getLength());
 	}
 	
-	private void createAndShowGUI() {
+	private void createAndShowGUI() {//sets up a GUI terminal so every thread can have their own input windows
         JFrame frame = new JFrame("Client");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);

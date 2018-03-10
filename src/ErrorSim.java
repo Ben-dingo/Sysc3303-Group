@@ -219,7 +219,7 @@ public class ErrorSim extends Thread implements ActionListener
 	}
 	
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
+	public void actionPerformed(ActionEvent arg0) {//runs when 'VK_ENTER' is pressed
 		input = textField.getText();
         textArea.append(input + "\n");
         textField.setText("");
@@ -229,8 +229,8 @@ public class ErrorSim extends Thread implements ActionListener
         textArea.setCaretPosition(textArea.getDocument().getLength());
 	}
 	
-	private void createAndShowGUI() {
-        JFrame frame = new JFrame("ErrorSim");
+	private void createAndShowGUI() {//sets up a GUI terminal so every thread can have their own input windows
+        JFrame frame = new JFrame("Client");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         
