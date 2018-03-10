@@ -1,6 +1,6 @@
 /*****************************************************************************
  * @Author: Ben St.Pierre
- * @Updated: Saturday February 3rd, 2018
+ * @Updated: Friday March 9th, 2018 by Ben St.Pierre
  * 
  * @Purpose: This class receives all the packets sent by the error sim. It creates
  * a new server thread to handle each incoming packet, once it passes on the packet
@@ -29,7 +29,6 @@ public class MasterServer extends Thread implements ActionListener
     protected JTextArea textArea = new JTextArea(10, 35);
     
     String input = "";
-    boolean updated = false;
 	
 	//creates master server thread
 	public MasterServer(boolean mode)
@@ -83,8 +82,7 @@ public class MasterServer extends Thread implements ActionListener
 		input = textField.getText();
         textArea.append(input + "\n");
         textField.setText("");
-        updated = true;
-        
+
         sema.release();
         
         textArea.setCaretPosition(textArea.getDocument().getLength());

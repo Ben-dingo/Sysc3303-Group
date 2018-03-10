@@ -1,6 +1,6 @@
 /*****************************************************************************
  * @Author: Ben St.Pierre
- * @Updated: Saturday February 3rd, 2018
+ * @Updated: Friday March 9th, 2018
  * 
  * @Purpose: This class prompts the user for what mode they would like to use.
  * It then sets up the 3 main threads used in this iteration
@@ -41,11 +41,11 @@ public class ThreadRunner
 		}
 		
 		System.out.println("How many Clients would you like to start?");
-		int selection = reader.nextInt();
+		int selection = reader.nextInt();//crashes if anything other than int is inputed
 		for(int i = 1; i <= selection; i++)
 		{
 			Client clientThread = new Client(mode,shutoff);
-			clientThread.start();
+			clientThread.start();//creates client threads based on user input 
 		}
 		
 		MasterServer serverThread = new MasterServer(mode);

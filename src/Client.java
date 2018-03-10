@@ -1,6 +1,6 @@
 /*****************************************************************************
  * @Author: Ben St.Pierre
- * @Updated: Saturday February 3rd, 2018 by Jozef Tierney
+ * @Updated: Friday March 9th, 2018 by Jozef Tierney & Ben St.Pierre
  * 
  * @Purpose: This class is meant to send datagramPackets to the Error sim class
  * who then sends it to the server, then receive packets back from the server.
@@ -22,14 +22,13 @@ public class Client extends Thread implements ActionListener
 	String message;
 	boolean shutoff = false;
 	
-	protected Semaphore sema = new Semaphore(0);
+	protected Semaphore sema = new Semaphore(0);//used to synchronize packet sending with user input
 	
 	protected JPanel pane;
 	protected JTextField textField = new JTextField(35);
-    protected JTextArea textArea = new JTextArea(10, 35);
+    protected JTextArea textArea = new JTextArea(10, 35);//basic gui components
     
-    String input = "";
-    boolean updated = false;
+    String input = "";//holds user input in jtextfield
 	
 	//creates client thread
 	public Client(boolean mode,boolean shutoff)
@@ -77,7 +76,7 @@ public class Client extends Thread implements ActionListener
 			{
 				if(shutoff == true) {break;}
 				textArea.append("Would you like to read, write or quit?\n");
-				sema.acquire();
+				sema.acquire();//waits for user input
 				String temp = input;
 				if(temp.toLowerCase().equals("quit")){
 					textArea.append("Shutting down server.\n");
@@ -162,11 +161,10 @@ public class Client extends Thread implements ActionListener
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
+	public void actionPerformed(ActionEvent arg0) {//runs when 'VK_ENTER' is pressed
 		input = textField.getText();
         textArea.append(input + "\n");
         textField.setText("");
-        updated = true;
         
         sema.release();
         
