@@ -1,0 +1,17 @@
+Group 6 Workload Breakdown
+Iteration 3
+
+User Input in Thread runner and client by Jozef Tierney
+ReadMe.txt by Jozef Tierney
+
+File Reading/Writing by Jozef Tierney and Omar Dawoud
+
+UML diagram by Omar Dawoud
+
+Terminal windows and synchronization by Ben St. Pierre
+PacketPrint updates by Ben St.Pierre
+JavaDoc and Comments by Ben St.Pierre
+Work Breakdown by Ben St.Pierre
+
+UCM Diagram by Noor Andin
+ErrorSim updates by Noor Andin
