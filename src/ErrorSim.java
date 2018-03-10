@@ -13,6 +13,7 @@
  */
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class ErrorSim extends Thread {
 	boolean mode;
@@ -80,10 +81,9 @@ public class ErrorSim extends Thread {
 		System.out.println("1: lose a packet     2: delay a packet    3: duplicate a packet      0: quit");
 		Scanner s = new Scanner(System.in);
 		String input = s.nextLine();
-
+		int type = rand.nextInt((3 - 1) + 1) + 1;
 		switch (input) {
 		case "1":
-			int type = rand.nextInt((3 - 1) + 1) + 1;
 			lostSimError(type);
 			break;
 		case "2":
@@ -92,6 +92,8 @@ public class ErrorSim extends Thread {
 			break;
 		case "3":
 			System.out.println("Not yet implemented");
+			type = rand.nextInt((2 - 1) + 1) + 1;
+			//duplicateSimError(type);
 			break;
 		case "0":
 			System.out.println("\n Error Simulator Shutting down. GoodBye!");
@@ -114,20 +116,16 @@ public class ErrorSim extends Thread {
 
 		switch (type) {
 		case 1:
-			System.out.println("Request type Packet seems to have been lost.");
+			System.out.println("Request type Packet seems to have been lost...");
 			break;
 		case 2:
-			System.out.println("An ACK packet seems to have been lost.");
+			System.out.println("An ACK packet seems to have been lost...");
 			break;
 		case 3:
-			System.out.println("A DATA packet seems to have been lost.");
+			System.out.println("A DATA packet seems to have been lost...");
 			break;
 		}
 		
-		for (int i = 0; i < 5000; i++) {
-			
-		}
-		System.out.println("Packet could not be found. Simulator has timed out!");
 		ui();
 
 	}
@@ -136,8 +134,21 @@ public class ErrorSim extends Thread {
 		System.out.println("Not yet implemented");
 	}
 	
-	public void duplicateSimError() {
-		System.out.println("Not yet implemented");
+	public void duplicateSimError(int type) {
+		System.out.println("Duplicate Packets have been dected!");
+		
+		switch(type) {
+		case 1:			
+			break;
+		case 2 :
+			break;
+		}
+		
+		try {
+			TimeUnit.MILLISECONDS.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**************************************************************************/
