@@ -101,7 +101,7 @@ public class Client extends Thread implements ActionListener
 			while(true) 
 			{
 				if(shutoff == true) {break;}
-				textArea.append("Enter message.\n");
+				textArea.append("Enter directory.\n");
 				sema.acquire();
 				message = input;
 				if(message.toLowerCase().equals("quit"))
@@ -111,6 +111,7 @@ public class Client extends Thread implements ActionListener
 						break;
 				}
 				else if(message != "") {
+					message = packetFile.importText(message);
 					break;
 				}
 				else {

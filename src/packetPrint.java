@@ -54,7 +54,7 @@ public class packetPrint
 			
 			returns += ("Packet type: " + packetType + "\n");
 			returns += ("Packet Length: " + packet.getLength() + "\n");
-			if(fileprint){returns += ("Filename: " + filename + "\n");}
+			if(fileprint){returns += ("Text in file: " + filename + "\n");}
 			returns += ("Mode: Verbose\n");
 			
 			return returns;
