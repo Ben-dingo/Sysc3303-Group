@@ -13,5 +13,5 @@ PacketPrint updates by Ben St.Pierre
 JavaDoc and Comments by Ben St.Pierre
 Work Breakdown by Ben St.Pierre
 
-UCM Diagram by Noor Andin
-ErrorSim updates by Noor Andin
+Timing Diagram by Noor Ncho
+ErrorSim updates by Noor Ncho
