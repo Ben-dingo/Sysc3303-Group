@@ -11,6 +11,7 @@
  * sent over to the client. For iteration 1 this only passes packets but later
  * it will cause errors in the packets
  */
+import java.io.IOException;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -73,6 +74,15 @@ public class ErrorSim extends Thread {
 	}
 
 	public void errorInterface() {
+		byte[]data = "Error Simulator".getBytes();
+		DatagramPacket simPacket = new DatagramPacket(data, data.length);
+		DatagramSocket simSocket;
+		try {
+			simSocket = new DatagramSocket();
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+		
 		System.out.println("What do you want to simulate?");
 		System.out.println("1: lose a packet     2: delay a packet    3: duplicate a packet      0: quit");
 		Scanner s = new Scanner(System.in);
@@ -83,13 +93,12 @@ public class ErrorSim extends Thread {
 			lostSimError(type);
 			break;
 		case "2":
-			System.out.println("Not yet implemented");
+			//System.out.println("Not yet implemented");
 			delaySimError(type);
 			break;
 		case "3":
-			System.out.println("Not yet implemented");
-			//type = rand.nextInt((2 - 1) + 1) + 1;
-			//duplicateSimError();
+			//System.out.println("Not yet implemented");
+			duplicateSimError();
 			break;
 		case "0":
 			System.out.println("\n Error Simulator Shutting down. GoodBye!");
@@ -101,7 +110,6 @@ public class ErrorSim extends Thread {
 	}
 
 	public void lostSimError(int type) {
-		DatagramPacket simServer, simClient;
 		DatagramSocket simSocket;
 		try {
 			simSocket = new DatagramSocket();
@@ -125,7 +133,6 @@ public class ErrorSim extends Thread {
 		}
 		
 		ui();
-
 	}
 
 	/***
@@ -148,17 +155,27 @@ public class ErrorSim extends Thread {
 			break;
 		}
 		
-		System.out.println(msg + "ErrorSim: Waiting for packet...");
+		System.out.println("ErrorSim: "+ msg +". Waiting for packet...");
 		try {
 			TimeUnit.MILLISECONDS.sleep(10000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		System.out.println("ErrorSim: Packet recieved and sent!");
+		ui();
 	}
 	
 	public void duplicateSimError() {
-		System.out.println("Not yet implemented");
+		
+		System.out.println("Duplicating packets....");
+		try {
+			System.out.println("First Packet Sent...");
+			TimeUnit.MILLISECONDS.sleep(5000);
+			System.out.println("Duplicate Packet Sent...");
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} 
+		ui();
 	}
 
 	/**************************************************************************/
