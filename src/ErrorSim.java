@@ -19,10 +19,6 @@ public class ErrorSim extends Thread {
 	boolean mode;
 	Random rand;
 
-	public ErrorSim() {
-
-	}
-
 	public ErrorSim(boolean mode) {
 		this.mode = mode;
 	}
@@ -88,18 +84,20 @@ public class ErrorSim extends Thread {
 			break;
 		case "2":
 			System.out.println("Not yet implemented");
-			// delaySimError();
+			delaySimError(type);
 			break;
 		case "3":
 			System.out.println("Not yet implemented");
-			type = rand.nextInt((2 - 1) + 1) + 1;
-			//duplicateSimError(type);
+			//type = rand.nextInt((2 - 1) + 1) + 1;
+			//duplicateSimError();
 			break;
 		case "0":
 			System.out.println("\n Error Simulator Shutting down. GoodBye!");
-			System.exit(0);
+			Thread.currentThread().interrupt();
+			//System.exit(0);
 			break;
 		}
+		s.close();
 	}
 
 	public void lostSimError(int type) {
@@ -130,25 +128,37 @@ public class ErrorSim extends Thread {
 
 	}
 
-	public void delaySimError() {
-		System.out.println("Not yet implemented");
-	}
-	
-	public void duplicateSimError(int type) {
+	/***
+	 * Takes is a random number to select what type of packet would be delayed,
+	 * and simulates the thread waiting for 10secs before recieving the packet and sending it on.
+	 * @param type
+	 */
+	public void delaySimError(int type) {
 		System.out.println("Duplicate Packets have been dected!");
-		
+		String msg = "";
 		switch(type) {
-		case 1:			
+		case 1:	
+			msg = "ACK packet is delayed";
 			break;
 		case 2 :
+			msg = "DATA packet is delayed";
+			break;
+		case 3:
+			msg = "Request packet is delayed";
 			break;
 		}
 		
+		System.out.println(msg + "ErrorSim: Waiting for packet...");
 		try {
-			TimeUnit.MILLISECONDS.sleep(5000);
+			TimeUnit.MILLISECONDS.sleep(10000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		System.out.println("ErrorSim: Packet recieved and sent!");
+	}
+	
+	public void duplicateSimError() {
+		System.out.println("Not yet implemented");
 	}
 
 	/**************************************************************************/
@@ -170,7 +180,9 @@ public class ErrorSim extends Thread {
 			errorInterface();
 		}else if(s.equalsIgnoreCase("Q")) {
 			System.out.println("\n Error Simulator Shutting down. GoodBye!");
-			System.exit(0);
+			Thread.currentThread().interrupt();
+			//System.exit(0);
 		}
+		scan.close();
 	}
 }
