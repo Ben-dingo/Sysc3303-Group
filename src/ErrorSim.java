@@ -12,6 +12,7 @@
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.*;
 import java.util.Random;
 import java.util.Scanner;
@@ -195,7 +196,16 @@ public class ErrorSim extends Thread implements ActionListener
 
 	public void ui() {
 		//ErrorSim e = this;
+		DatagramSocket socket;
+		DatagramPacket rp = null;
 		
+		try {
+			socket = new DatagramSocket();
+			socket.receive(rp);
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		textArea.append("What function do you want to operate in?\n");
 		textArea.append("(N)ormal mode or (E)rror Sim mode or (Q)uit.\n");
 		
