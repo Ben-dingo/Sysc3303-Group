@@ -1,11 +1,9 @@
 /*****************************************************************************
  * @Author: Omar Dawoud
- * @Updated: Friday March 9th, 2018 by Ben St.Pierre
+ * @Updated: Saturday February 3rd, 2018
  * 
  * @Purpose: This class receives print requests from all the thread classes
- * it prints various information depending on the packet received. As of the latest
- * iteration, the Print method instead returns a string of what it was going to print
- * to return the the GUI of the thread that called it.
+ * it prints various information depending on the packet received
  */
 import java.net.DatagramPacket;
 import java.nio.charset.StandardCharsets;
@@ -62,7 +60,6 @@ public class packetPrint
 			return returns;
 		}
 		
-		//this method checks for the end of a packet to adjust the length of data sent
 		public static void packetLength(DatagramPacket packet)
 		{
 			boolean one = false;

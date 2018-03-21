@@ -12,7 +12,6 @@
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.net.*;
 import java.util.Random;
 import java.util.Scanner;
@@ -73,7 +72,7 @@ public class ErrorSim extends Thread implements ActionListener
 				String message = new String(packetR.getData());
 				if(message.equals("00ShutDown00"))//if the packet was a shutdown this is where the thread ends
 				{
-					System.out.println("ErrorSim understands");
+					textArea.append("ErrorSim understands\n");
 					socketR.close();
 					Thread.currentThread().interrupt();
 					break;
@@ -99,8 +98,8 @@ public class ErrorSim extends Thread implements ActionListener
 			e.printStackTrace();
 		}
 		
-		System.out.println("What do you want to simulate?");
-		System.out.println("1: lose a packet     2: delay a packet    3: duplicate a packet      0: quit");
+		textArea.append("What do you want to simulate?\n");
+		textArea.append("1: lose a packet     2: delay a packet    3: duplicate a packet      0: quit\n");
 		Scanner s = new Scanner(System.in);
 		String input = s.nextLine();
 		int type = rand.nextInt((3 - 1) + 1) + 1;
@@ -117,7 +116,7 @@ public class ErrorSim extends Thread implements ActionListener
 			duplicateSimError();
 			break;
 		case "0":
-			System.out.println("\n Error Simulator Shutting down. GoodBye!");
+			textArea.append("\n Error Simulator Shutting down. GoodBye!\n");
 			Thread.currentThread().interrupt();
 			//System.exit(0);
 			break;
@@ -134,17 +133,17 @@ public class ErrorSim extends Thread implements ActionListener
 			System.exit(1);
 		}
 
-		System.out.println("A packet has been lost");
+		textArea.append("A packet has been lost\n");
 
 		switch (type) {
 		case 1:
-			System.out.println("Request type Packet seems to have been lost...");
+			textArea.append("Request type Packet seems to have been lost...\n");
 			break;
 		case 2:
-			System.out.println("An ACK packet seems to have been lost...");
+			textArea.append("An ACK packet seems to have been lost...\n");
 			break;
 		case 3:
-			System.out.println("A DATA packet seems to have been lost...");
+			textArea.append("A DATA packet seems to have been lost...\n");
 			break;
 		}
 		
@@ -157,7 +156,7 @@ public class ErrorSim extends Thread implements ActionListener
 	 * @param type
 	 */
 	public void delaySimError(int type) {
-		System.out.println("Duplicate Packets have been dected!");
+		textArea.append("Duplicate Packets have been dected!\n");
 		String msg = "";
 		switch(type) {
 		case 1:	
@@ -171,23 +170,23 @@ public class ErrorSim extends Thread implements ActionListener
 			break;
 		}
 		
-		System.out.println("ErrorSim: "+ msg +". Waiting for packet...");
+		textArea.append("ErrorSim: "+ msg +". Waiting for packet...\n");
 		try {
 			TimeUnit.MILLISECONDS.sleep(10000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("ErrorSim: Packet recieved and sent!");
+		textArea.append("ErrorSim: Packet recieved and sent!\n");
 		ui();
 	}
 	
 	public void duplicateSimError() {
 		
-		System.out.println("Duplicating packets....");
+		textArea.append("Duplicating packets....\n");
 		try {
-			System.out.println("First Packet Sent...");
+			textArea.append("First Packet Sent...\n");
 			TimeUnit.MILLISECONDS.sleep(5000);
-			System.out.println("Duplicate Packet Sent...");
+			textArea.append("Duplicate Packet Sent...\n");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} 
@@ -196,16 +195,7 @@ public class ErrorSim extends Thread implements ActionListener
 
 	public void ui() {
 		//ErrorSim e = this;
-		DatagramSocket socket;
-		DatagramPacket rp = null;
 		
-		try {
-			socket = new DatagramSocket();
-			socket.receive(rp);
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
 		textArea.append("What function do you want to operate in?\n");
 		textArea.append("(N)ormal mode or (E)rror Sim mode or (Q)uit.\n");
 		
@@ -229,7 +219,7 @@ public class ErrorSim extends Thread implements ActionListener
 	}
 	
 	@Override
-	public void actionPerformed(ActionEvent arg0) {//runs when 'VK_ENTER' is pressed
+	public void actionPerformed(ActionEvent arg0) {
 		input = textField.getText();
         textArea.append(input + "\n");
         textField.setText("");
@@ -239,8 +229,8 @@ public class ErrorSim extends Thread implements ActionListener
         textArea.setCaretPosition(textArea.getDocument().getLength());
 	}
 	
-	private void createAndShowGUI() {//sets up a GUI terminal so every thread can have their own input windows
-        JFrame frame = new JFrame("Client");
+	private void createAndShowGUI() {
+        JFrame frame = new JFrame("ErrorSim");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         
