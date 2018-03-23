@@ -59,15 +59,6 @@ public class MasterServer extends Thread implements ActionListener
 			socketR.receive(packetR);
 			if(this.mode) {textArea.append(packetPrint.Print("Received from Host",packetR));}
 			
-			String message = new String(packetR.getData());
-			if(message.equals("00ShutDown00"))//shutdown thread
-			{
-				System.out.println("MasterServer understands");
-				socketR.close();
-				Thread.currentThread().interrupt();
-				break;
-			}
-			
 			DatagramSocket newSocket = new DatagramSocket();
 			packetS.setPort(newSocket.getLocalPort());
 			Server newThread = new Server(this.mode,newSocket,newSocket.getLocalPort());//creates server thread

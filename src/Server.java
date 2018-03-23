@@ -41,12 +41,12 @@ public class Server extends Thread
 		socketR.receive(packetR);
 		if(this.mode) {packetPrint.Print("Received from MasterServer", packetR);}
 		byte[] received = packetR.getData();
-		if(received[1] == 0x01)//if its a reading packet
+		if(received[0] == 0x01)//if its a reading packet
 		{
 			byte[] returning = new byte[]{0x00};
 			packetS.setData(returning);
 		}
-		else if(received[1] == 0x02)//if its a writing packet
+		else if(received[0] == 0x02)//if its a writing packet
 		{
 			byte[] returning = new byte[]{0x01};
 			packetS.setData(returning);
