@@ -10,6 +10,8 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
 import javax.swing.JFrame;
@@ -21,6 +23,7 @@ import javax.swing.JTextField;
 public class MasterServer extends Thread implements ActionListener
 {	
 	boolean mode;
+	ArrayList<DatagramSocket> servers = new ArrayList<DatagramSocket>();
 	
 	protected Semaphore sema = new Semaphore(0);
 	
@@ -58,14 +61,35 @@ public class MasterServer extends Thread implements ActionListener
 		{
 			socketR.receive(packetR);
 			if(this.mode) {textArea.append(packetPrint.Print("Received from Host",packetR));}
-			
-			DatagramSocket newSocket = new DatagramSocket();
-			packetS.setPort(newSocket.getLocalPort());
-			Server newThread = new Server(this.mode,newSocket,newSocket.getLocalPort());//creates server thread
-			if(mode) {textArea.append("a new server has been made with ID " + newSocket.getLocalPort() + "\n");}
-			newThread.start();
-			if(this.mode) {textArea.append(packetPrint.Print("Sending to sub server",packetS));}
-			socketR.send(packetS);//sends packet to new server thread
+			byte[] retreived = packetR.getData();
+			if(retreived[1] == '@')
+			{
+				DatagramSocket newSocket = new DatagramSocket();
+				servers.add(newSocket);
+				packetS.setPort(newSocket.getLocalPort());
+				Server newThread = new Server(this.mode,newSocket,newSocket.getLocalPort());//creates server thread
+				if(mode) {textArea.append("a new server has been made with ID " + newSocket.getLocalPort() + "\n");}
+				newThread.start();
+				if(this.mode) {textArea.append(packetPrint.Print("Sending to sub server",packetS));}
+				socketR.send(packetS);//sends packet to new server thread
+			}
+			else
+			{
+				String byteData = new String(retreived,StandardCharsets.UTF_8);
+				int porthole = Integer.parseInt(byteData.substring(1, 6));
+				boolean found = false;
+				for(DatagramSocket socket : servers)
+				{
+					if(socket.getLocalPort() == porthole)
+					{
+						found = true;
+						packetS.setPort(porthole);
+						textArea.append("sending to server with ID " + socket.getLocalPort() + "\n");
+						socketR.send(packetS);
+					}
+				}
+				if(!found) {System.out.println("couldn't find anything");}
+			}
 		}
 	}
 	

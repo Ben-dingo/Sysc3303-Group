@@ -128,14 +128,22 @@ public class Client extends Thread implements ActionListener
 			{
 				byte[] file = message.getBytes();
 				byte[] toSend = new byte[file.length + 10];
-				System.out.println(toSend.length);
 				if(function.equals("read")) {
 					toSend[0] = 0x01;
 				}
 				else{
 					toSend[0] = 0x02;
 				}
-				for(int i = 1; i <= 8; i++) {toSend[i] = '@';}
+				
+				textArea.append("Enter port number.\n");
+				sema.acquire();
+				byte[] port = input.getBytes();
+				for(int q = 0; q < 5; q++)
+				{
+					toSend[q+1] = port[q];
+				}
+				
+				for(int i = 6; i <= 8; i++) {toSend[i] = '@';}
 				for(int j = 0; j < file.length; j++) {
 					toSend[j+9] = file[j];//puts string into correct spot in byte array
 				}

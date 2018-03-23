@@ -18,7 +18,7 @@ public class packetPrint
 			byte[] received = packet.getData();
 			
 			String filename = new String(packet.getData(),StandardCharsets.UTF_8);
-			filename = filename.substring(9);
+			//if(filename.length() >= 9) {filename = filename.substring(9);}
 			packetLength(packet);
 			
 			returns = (info + " as Bytes: ");
