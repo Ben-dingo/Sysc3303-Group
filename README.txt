@@ -11,9 +11,9 @@ Instructions for running the program:
 	Verbose: Outputs the details of the packet during execution of the program
 	Quiet: Details remain hidden in the program.
 	Quit: Shuts down the program
-5.	If quiet is selected datagram details will not be printed, if verbose is selected it will.
+5.	If quiet is selected, the datagram packet details will not be printed, if verbose is selected it will.
 6.	Next you're asked how many clients you would like to initialize. The minimum number of clients is one to function.
-7.	At this point n windows will open (1 server, 1 errorSim and an inputted number of clients.)
+7.	At this point n windows will open (1 server, 1 errorSim and a specified number of clients.)
 	The client(s) will continue to prompt inputs from the user for specifying the packet type (read/write/quit).
 	The second is the error sim that prints out details of packets passing through it with a specified mode (Normal/ErrorSim/Quit). 	Finally, The server functions the same function as errorSim.
 8.	Next you're prompted to declare whether you desire a read or write packet.
