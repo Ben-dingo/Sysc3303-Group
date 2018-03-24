@@ -18,6 +18,7 @@ public class packetPrint
 			byte[] received = packet.getData();
 			
 			String filename = new String(packet.getData(),StandardCharsets.UTF_8);
+			//if(filename.length() >= 9) {filename = filename.substring(9);}
 			packetLength(packet);
 			
 			returns = (info + " as Bytes: ");
@@ -34,17 +35,17 @@ public class packetPrint
 			
 			
 			if(received.length == 1) {
-				if(received[0] == 0x00) 
+				if(received[0] == 0x10) 
 					packetType = "DATA";//Data block, currently just a packet
 				
-				else if(received[0] == 0x01)
+				else if(received[0] == 0x11)
 					packetType = "ACK";//Acknowledge block, currently just a packet
 			}
-			else if(received[1] == 0x01) {
+			else if(received[0] == 0x01) {
 					packetType = "RRQ";//Read request
 					fileprint = true;
 			}
-			else if(received[1] == 0x02) {
+			else if(received[0] == 0x02) {
 					packetType = "WRQ";//write request
 					fileprint = true;
 			}
@@ -62,22 +63,13 @@ public class packetPrint
 		
 		public static void packetLength(DatagramPacket packet)
 		{
-			boolean one = false;
 			byte[] received = packet.getData();
 			for(int j = 0; j < received.length; j++)
 			{
-				if(received[j] == 0x00 && one == false)
+				if(received[j] == 0x00)
 				{
-					one = true;
-				}
-				else if (received[j] == 0x00 && one == true)
-				{
-					packet.setLength(j);
+					packet.setLength(j+1);
 					break;
-				}
-				else
-				{
-					one = false;
 				}
 			}
 		}

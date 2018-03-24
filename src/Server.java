@@ -38,25 +38,24 @@ public class Server extends Thread
 		DatagramPacket packetR = new DatagramPacket(new byte[512],512);
 		InetAddress localHostAddress = InetAddress.getLocalHost();
 		DatagramPacket packetS = new DatagramPacket(new byte[1],1,localHostAddress,23);
-		socketR.receive(packetR);
-		if(this.mode) {packetPrint.Print("Received from MasterServer", packetR);}
-		byte[] received = packetR.getData();
-		if(received[1] == 0x01)//if its a reading packet
-		{
-			byte[] returning = new byte[]{0x00};
-			packetS.setData(returning);
-		}
-		else if(received[1] == 0x02)//if its a writing packet
-		{
-			byte[] returning = new byte[]{0x01};
-			packetS.setData(returning);
-		}
-		else {throw new Exception("InvalidException");}//if it's invalid
+		while(true)
+		{	
+			socketR.receive(packetR);
+			byte[] received = packetR.getData();
+			if(received[0] == 0x01)//if its a reading packet
+			{
+				byte[] returning = new byte[]{0x00};
+				packetS.setData(returning);
+			}
+			else if(received[0] == 0x02)//if its a writing packet
+			{
+				byte[] returning = new byte[]{0x01};
+				packetS.setData(returning);
+			}
+			else {throw new Exception("InvalidException");}//if it's invalid
 		
-		if(this.mode) {packetPrint.Print("Sending to Host", packetS);}
-		socketR.send(packetS);
-		socketR.close();
-		Thread.currentThread().interrupt();//closes thread
+			socketR.send(packetS);
+		}
 	}
 	
 	public int getID()

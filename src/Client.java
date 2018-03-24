@@ -121,31 +121,37 @@ public class Client extends Thread implements ActionListener
 			}
 			if(shutoff == true)//performs shutdown for all running threads
 			{
-				message = "00ShutDown00";
-				byte[] toSend = message.getBytes();
-				packetS.setData(toSend);
-				packetS.setLength(12);
-				socket.send(packetS);
 				Thread.currentThread().interrupt();
 				break;
 			}
 			else
 			{
 				byte[] file = message.getBytes();
-				byte[] toSend = new byte[file.length + 3];
-				for(int j = 0; j < file.length; j++) {
-					if(function.equals("read")) {
-						toSend[1] = 0x01;
-					}
-					else{
-						toSend[1] = 0x02;
-					}
-					toSend[j+2] = file[j];//puts string into correct spot in byte array
-					toSend[0] = 0x00;
-					toSend[toSend.length-1] = 0x00;
-					packetS.setData(toSend);
-					packetS.setLength(toSend.length);
+				byte[] toSend = new byte[file.length + 10];
+				if(function.equals("read")) {
+					toSend[0] = 0x01;
 				}
+				else{
+					toSend[0] = 0x02;
+				}
+				
+				textArea.append("Enter port number.\n");
+				sema.acquire();
+				byte[] port = input.getBytes();
+				for(int q = 0; q < 5; q++)
+				{
+					toSend[q+1] = port[q];
+				}
+				
+				for(int i = 6; i <= 8; i++) {toSend[i] = '@';}
+				for(int j = 0; j < file.length; j++) {
+					toSend[j+9] = file[j];//puts string into correct spot in byte array
+				}
+				
+				toSend[toSend.length-1] = 0x00;
+				packetS.setData(toSend);
+				packetS.setLength(toSend.length);
+				
 				if(function.equals("read")) {
 					if(this.mode) {textArea.append(packetPrint.Print("Reading packet",packetS));}
 				}
