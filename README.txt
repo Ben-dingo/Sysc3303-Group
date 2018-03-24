@@ -5,7 +5,7 @@ Instructions for running iteration 1:
 
 1.	Launch project in eclipse.
 2.	Main function is in threadRunner.
-3.	run project and follow prompts.
+3.	Eun the project and follow its prompts.
 4.	Quit can be entered at any time to shut down servers and close the program.
 5.	If quiet is selected datagram details will not be printed, if verbose is selected it will.
 6.	Next you're asked how many clients you would like to initialize, only one is needed to function.
