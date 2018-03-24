@@ -16,6 +16,11 @@ public class ThreadRunner
 		String message;
 		Scanner reader = new Scanner(System.in);
 		System.out.println("Server started.\nEnter 'Quit' to shut down server.");
+		//String test = "test message";
+		packetFile packet = new packetFile();
+		packet.exportText("");
+		//packet.modifyText("myFile.txt", "message3");
+		//packetFile.modifyText("myFile.txt", "message2");
 		while(true)//prompts user for input
 		{
 			

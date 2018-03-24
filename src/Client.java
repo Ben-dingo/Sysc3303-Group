@@ -12,6 +12,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Semaphore;
 
 import javax.swing.*;
@@ -21,6 +22,7 @@ public class Client extends Thread implements ActionListener
 	boolean mode;
 	String message;
 	boolean shutoff = false;
+	static String destination;
 	
 	protected Semaphore sema = new Semaphore(0);
 	
@@ -101,7 +103,7 @@ public class Client extends Thread implements ActionListener
 			while(true) 
 			{
 				if(shutoff == true) {break;}
-				textArea.append("Enter directory.\n");
+				textArea.append("Enter source directory.\n");
 				sema.acquire();
 				message = input;
 				if(message.toLowerCase().equals("quit"))
@@ -111,14 +113,16 @@ public class Client extends Thread implements ActionListener
 						break;
 				}
 				else if(message != "") {
-					message = packetFile.importText(message);
 					break;
 				}
 				else {
-					textArea.append("A message must be entered to procede.\n");
+					textArea.append("A directory must be entered to procede.\n");
 				}
 				
 			}
+			
+			
+			
 			if(shutoff == true)//performs shutdown for all running threads
 			{
 				Thread.currentThread().interrupt();
@@ -126,8 +130,8 @@ public class Client extends Thread implements ActionListener
 			}
 			else
 			{
-				byte[] file = message.getBytes();
-				byte[] toSend = new byte[file.length + 10];
+				byte[] directory = message.getBytes();
+				byte[] toSend = new byte[directory.length + 10];
 				if(function.equals("read")) {
 					toSend[0] = 0x01;
 				}
@@ -135,17 +139,9 @@ public class Client extends Thread implements ActionListener
 					toSend[0] = 0x02;
 				}
 				
-				textArea.append("Enter port number.\n");
-				sema.acquire();
-				byte[] port = input.getBytes();
-				for(int q = 0; q < 5; q++)
-				{
-					toSend[q+1] = port[q];
-				}
-				
-				for(int i = 6; i <= 8; i++) {toSend[i] = '@';}
-				for(int j = 0; j < file.length; j++) {
-					toSend[j+9] = file[j];//puts string into correct spot in byte array
+				for(int i = 1; i <= 8; i++) {toSend[i] = '@';}
+				for(int j = 0; j < directory.length; j++) {
+					toSend[j+9] = directory[j];//puts string into correct spot in byte array
 				}
 				
 				toSend[toSend.length-1] = 0x00;
@@ -154,11 +150,14 @@ public class Client extends Thread implements ActionListener
 				
 				if(function.equals("read")) {
 					if(this.mode) {textArea.append(packetPrint.Print("Reading packet",packetS));}
+					readProcess(socket,packetS);
 				}
 				else{
 					if(this.mode) {textArea.append(packetPrint.Print("Writing packet",packetS));}
+					writeProcess(socket,packetS);
 				}
 			}
+			
 			socket.send(packetS);
 			if(shutoff == true) {break;}
 			//time passes here while waiting for response from server
@@ -167,6 +166,62 @@ public class Client extends Thread implements ActionListener
 		}
 	}
 
+	
+	public static String getDest() {
+		return destination;
+	}
+
+	public String readProcess(DatagramSocket socket, DatagramPacket packetS) throws Exception {
+		socket.send(packetS);
+		String text = "";
+		int cur = 0;
+		int fin = 1;
+		while(cur > fin)
+		{
+			socket.receive(packetS);
+			
+			byte[] data = packetS.getData();
+			String received = new String(packetS.getData(),StandardCharsets.UTF_8);
+			if(data[6] == 0x02)
+			{
+				cur = Integer.parseInt(received.substring(7));
+				fin = Integer.parseInt(received.substring(8));
+			}
+			else{cur = fin;}
+			if(received.length() >= 9) {received = received.substring(9);}
+			text += received;
+			
+			byte[] AckData = new byte[data.length];
+			AckData[0] = 0x11;
+			for(int i = 1; i > 10; i++){AckData[i] = data[i];}
+			AckData[7] = (byte) (cur+1);//this might not work tbh
+			packetS.setData(AckData);
+			socket.send(packetS);
+		}
+		
+		return text;
+	}
+	
+	public void writeProcess(DatagramSocket socket,DatagramPacket packetS) throws Exception {
+		socket.send(packetS);
+		String text = "";
+		socket.receive(packetS);
+		
+		textArea.append("Text to put in file.\n");
+		sema.acquire();
+		message = input;
+		int values = (int) Math.ceil(message.length()/510);
+		String[] pieces = new String[values];
+		for(int i = 0; i < values; i++)
+		{
+			int bot = 500*i;
+			int top = 500*(i + 1);
+			pieces[i] = message.substring(bot, top);
+			System.out.println(i + ": " +pieces[i]);
+		}
+
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		input = textField.getText();

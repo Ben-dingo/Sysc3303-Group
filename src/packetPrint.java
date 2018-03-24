@@ -18,7 +18,7 @@ public class packetPrint
 			byte[] received = packet.getData();
 			
 			String filename = new String(packet.getData(),StandardCharsets.UTF_8);
-			//if(filename.length() >= 9) {filename = filename.substring(9);}
+			if(filename.length() >= 9) {filename = filename.substring(9);}
 			packetLength(packet);
 			
 			returns = (info + " as Bytes: ");
@@ -52,11 +52,15 @@ public class packetPrint
 		
 			else
 				packetType = "ERROR";
-			
+			if(filename.length() >= 9) {filename = filename.substring(9);}
 			returns += ("Packet type: " + packetType + "\n");
 			returns += ("Packet Length: " + packet.getLength() + "\n");
 			if(fileprint){returns += ("Text in file: " + filename + "\n");}
 			returns += ("Mode: Verbose\n");
+			
+			packetFile packet2 = new packetFile();
+			//String contents = new String(packetS.getData(),StandardCharsets.UTF_8);
+			packet2.modifyText("myFile.txt", filename);
 			
 			return returns;
 		}
