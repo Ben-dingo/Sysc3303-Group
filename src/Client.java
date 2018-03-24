@@ -121,26 +121,7 @@ public class Client extends Thread implements ActionListener
 				
 			}
 			
-			while(true) 
-			{
-				if(shutoff == true) {break;}
-				textArea.append("Enter destination directory.\n");
-				sema.acquire();
-				if(message.toLowerCase().equals("quit"))
-				{
-					textArea.append("Shutting down server.\n");
-						shutoff = true;
-						break;
-				}
-				else if(message != "") {
-					destination = input;
-					break;
-				}
-				else {
-					textArea.append("A directory must be entered to procede.\n");
-				}
-				
-			}
+			
 			
 			if(shutoff == true)//performs shutdown for all running threads
 			{
