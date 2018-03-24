@@ -63,7 +63,7 @@ public class packetFile{
 		String existingText = importText(directory);
 		
 		if(!existingText.equals("error")) 
-			existingText.concat("\n"+ newText);
-			exportText(existingText);
+			newText = existingText+newText;
+			exportText(newText);
 	}
 }

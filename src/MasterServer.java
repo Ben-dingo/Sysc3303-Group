@@ -68,16 +68,14 @@ public class MasterServer extends Thread implements ActionListener
 				servers.add(newSocket);
 				
 				int portinfo = newSocket.getLocalPort();
-				System.out.println(portinfo);
 				for(int i = 1; i < 6; i ++){
 				    retreived[6-i] = (byte) (Integer.toString(portinfo % 10)).charAt(0);
-				    System.out.println(portinfo % 10);
 				    portinfo = (int) Math.floor(portinfo / 10);
 				}
 				packetS.setData(retreived);
 				
 				packetS.setPort(newSocket.getLocalPort());
-				Server newThread = new Server(this.mode,newSocket,newSocket.getLocalPort());//creates server thread
+				server newThread = new server(this.mode,newSocket,newSocket.getLocalPort());//creates server thread
 				if(mode) {textArea.append("a new server has been made with ID " + newSocket.getLocalPort() + "\n");}
 				newThread.start();
 				if(this.mode) {textArea.append(packetPrint.Print("Sending to sub server",packetS));}

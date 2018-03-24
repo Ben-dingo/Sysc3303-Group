@@ -1,5 +1,5 @@
 /*****************************************************************************
- * @Author: Ben St.Pierre
+ * @Author: Ben St.Pierre & Noor Ncho
  * @Updated: Saturday February 3rd, 2018
  * 
  * @Purpose: This class is meant to function as a middle man between the
@@ -111,7 +111,7 @@ public class ErrorSim extends Thread implements ActionListener
 			duplicateSimError();
 			break;
 		case "4":
-			packetError(simPacket);
+			packetError(simPacket, type);
 			break;
 		case "5":
 			tidError(simPacket);
@@ -189,7 +189,7 @@ public class ErrorSim extends Thread implements ActionListener
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		textArea.append(" ");
+		textArea.append("\n");
 		ui();
 	}
 
@@ -202,9 +202,10 @@ public class ErrorSim extends Thread implements ActionListener
 		try {
 			simErrorSocket.send(p);
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			textArea.append("Unable to send, packet, to unknown TID.");
 		}
-		textArea.append(" ");
+		textArea.append("\n");
 		ui();
 	}
 	
@@ -212,9 +213,22 @@ public class ErrorSim extends Thread implements ActionListener
 	 * 
 	 * @param p
 	 */
-	public void packetError(DatagramPacket p) {
+	public void packetError(DatagramPacket p, int type) {
+		textArea.append("Packet has been Corrupted \n");
 		
-		textArea.append(" ");
+		switch(type) {
+		case 1:
+			textArea.append("Opcode has been changed\n");
+			break;
+		case 2:
+			textArea.append("Block number has been changed\n");
+			break;
+		case 3:
+			textArea.append("The last bytes have been changed\n");
+			break;
+		}
+		
+		textArea.append("\n");
 		ui();
 	}
 	
