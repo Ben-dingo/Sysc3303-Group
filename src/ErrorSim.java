@@ -12,6 +12,7 @@
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.*;
 import java.util.Random;
 import java.util.Scanner;
@@ -26,7 +27,8 @@ import javax.swing.JTextField;
 public class ErrorSim extends Thread implements ActionListener
 {
 	boolean mode;
-	Random rand;
+
+	DatagramSocket simErrorSocket;
 	
 	protected Semaphore sema = new Semaphore(0);
 	
@@ -91,47 +93,56 @@ public class ErrorSim extends Thread implements ActionListener
 	public void errorInterface() {
 		byte[]data = "Error Simulator".getBytes();
 		DatagramPacket simPacket = new DatagramPacket(data, data.length);
-		DatagramSocket simSocket;
+		
 		try {
-			simSocket = new DatagramSocket();
+			simErrorSocket = new DatagramSocket(50);
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
 		
-		textArea.append("What do you want to simulate?\n");
-		textArea.append("1: lose a packet     2: delay a packet    3: duplicate a packet      0: quit\n");
+		textArea.append("What do you want to simulate?");
+		textArea.append("1: lose a packet");
+		textArea.append("2: delay a packet");
+		textArea.append("3: duplicate a packet");
+		textArea.append("4: Illegal TIP Orperation");
+		textArea.append("5: Unknown TID");
+		textArea.append("0: quit");
+		
 		Scanner s = new Scanner(System.in);
 		String input = s.nextLine();
-		int type = rand.nextInt((3 - 1) + 1) + 1;
+		int type = (int)(Math.random() * 3 + 1);
 		switch (input) {
 		case "1":
 			lostSimError(type);
 			break;
 		case "2":
-			//System.out.println("Not yet implemented");
 			delaySimError(type);
 			break;
 		case "3":
-			//System.out.println("Not yet implemented");
 			duplicateSimError();
 			break;
+		case "4":
+			packetError(simPacket);
+			break;
+		case "5":
+			tidError(simPacket);
+			break;
 		case "0":
-			textArea.append("\n Error Simulator Shutting down. GoodBye!\n");
+			textArea.append("\nError Simulator Shutting down. GoodBye!");
 			Thread.currentThread().interrupt();
-			//System.exit(0);
 			break;
 		}
-		s.close();
+		s.close();		
 	}
 
 	public void lostSimError(int type) {
-		DatagramSocket simSocket;
+		/*DatagramSocket simSocket;
 		try {
 			simSocket = new DatagramSocket();
 		} catch (SocketException e) {
 			e.printStackTrace();
 			System.exit(1);
-		}
+		}*/
 
 		textArea.append("A packet has been lost\n");
 
@@ -172,7 +183,7 @@ public class ErrorSim extends Thread implements ActionListener
 		
 		textArea.append("ErrorSim: "+ msg +". Waiting for packet...\n");
 		try {
-			TimeUnit.MILLISECONDS.sleep(10000);
+			TimeUnit.MILLISECONDS.sleep(5000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -189,10 +200,37 @@ public class ErrorSim extends Thread implements ActionListener
 			textArea.append("Duplicate Packet Sent...\n");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		} 
+		}
+		textArea.append(" ");
 		ui();
 	}
 
+	/***
+	 * 
+	 * @param p
+	 */
+	public void tidError(DatagramPacket p) {
+		textArea.append("Sending packet from different Port: " + simErrorSocket.getLocalPort());
+		try {
+			simErrorSocket.send(p);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		textArea.append(" ");
+		ui();
+	}
+	
+	/***
+	 * 
+	 * @param p
+	 */
+	public void packetError(DatagramPacket p) {
+		
+		textArea.append(" ");
+		ui();
+	}
+	
+	/***************************************************************/
 	public void ui() {
 		//ErrorSim e = this;
 		
