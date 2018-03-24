@@ -73,7 +73,7 @@ public class ErrorSim extends Thread implements ActionListener
 				
 				String message = new String(packetR.getData());
 				
-				DatagramPacket ServerPacketR = new DatagramPacket(new byte[1],1);
+				DatagramPacket ServerPacketR = new DatagramPacket(new byte[512],512);
 				socketR.receive(ServerPacketR);//receives response packet from server
 				if(this.mode) {textArea.append(packetPrint.Print("Received from Server", ServerPacketR));}
 				

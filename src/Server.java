@@ -8,6 +8,7 @@
  * server thread closes itself once it's handled one packet
  */
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 public class Server extends Thread 
 {
 	boolean mode;
@@ -36,25 +37,89 @@ public class Server extends Thread
 	public void ServerPurpose() throws Exception
 	{
 		DatagramPacket packetR = new DatagramPacket(new byte[512],512);
-		InetAddress localHostAddress = InetAddress.getLocalHost();
-		DatagramPacket packetS = new DatagramPacket(new byte[1],1,localHostAddress,23);
 		while(true)
 		{	
 			socketR.receive(packetR);
+			InetAddress localHostAddress = InetAddress.getLocalHost();
+			DatagramPacket packetS = new DatagramPacket(new byte[512],512,localHostAddress,23);
+			packetS.setData(packetR.getData());
+			
 			byte[] received = packetR.getData();
 			if(received[0] == 0x01)//if its a reading packet
 			{
-				byte[] returning = new byte[]{0x00};
-				packetS.setData(returning);
+				readProcess(socketR, packetR,packetS);
 			}
 			else if(received[0] == 0x02)//if its a writing packet
 			{
-				byte[] returning = new byte[]{0x01};
-				packetS.setData(returning);
+				writeProcess(socketR, packetR,packetS);
 			}
 			else {throw new Exception("InvalidException");}//if it's invalid
+		}
+	}
+	
+	public void writeProcess(DatagramSocket socket, DatagramPacket packetR, DatagramPacket packetS) throws Exception {
+		socket.send(packetS);
+		String text = "";
+		int cur = 0;
+		int fin = 1;
+		while(cur > fin)
+		{
+			socket.receive(packetR);
+			
+			byte[] data = packetR.getData();
+			String received = new String(data,StandardCharsets.UTF_8);
+			if(data[6] == ((byte) 2))
+			{
+				cur = (int) data[7];
+				fin = (int) data[8];
+			}
+			else{cur = fin;}
+			if(received.length() >= 9) {received = received.substring(9);}
+			text += received;
+			
+			byte[] AckData = new byte[data.length];
+			AckData[0] = 0x11;
+			for(int i = 1; i > 10; i++){AckData[i] = data[i];}
+			
+			packetS.setData(AckData);
+			socket.send(packetS);
+		}
 		
-			socketR.send(packetS);
+		//write text to file here
+	}
+	
+	public void readProcess(DatagramSocket socket,DatagramPacket packetR, DatagramPacket packetS) throws Exception {
+		System.out.println(packetPrint.Print("server to return",packetS));
+		socket.send(packetS);
+		socket.receive(packetR);
+		
+		String received = new String(packetR.getData(),StandardCharsets.UTF_8);
+		if(received.length() >= 9) {received = received.substring(9);}
+
+		packetFile packet = new packetFile();
+		String message = packet.importText(received);
+		
+		int fin = (int) Math.ceil(message.length()/500);
+		String pieces = "";
+		for(int cur = 0; cur < fin; cur++)
+		{
+			int bot = 500*cur;
+			int top = 500*(cur + 1);
+			pieces = message.substring(bot, top);
+			System.out.println(cur + ": " +pieces);
+			byte[] data = packetR.getData();
+			data[0] = 0x10;
+			if(fin == 1){data[6] = (byte) 1;}
+			else{data[6] = (byte) 2;}
+			
+			data[7] = (byte) cur;
+			data[8] = (byte) fin;
+			
+			byte[] piecebyte = pieces.getBytes();
+			for(int j = 0; j < piecebyte.length; j++) {data[j+9] = piecebyte[j];}
+			
+			packetS.setData(data);
+			socket.send(packetS);
 		}
 	}
 	

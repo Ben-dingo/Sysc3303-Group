@@ -18,7 +18,7 @@ public class packetPrint
 			byte[] received = packet.getData();
 			
 			String filename = new String(packet.getData(),StandardCharsets.UTF_8);
-			if(filename.length() >= 9) {filename = filename.substring(9);}
+			//if(filename.length() >= 9) {filename = filename.substring(9);}
 			packetLength(packet);
 			
 			returns = (info + " as Bytes: ");
@@ -34,20 +34,22 @@ public class packetPrint
 			String packetType = "";
 			
 			
-			if(received.length == 1) {
-				if(received[0] == 0x10) 
-					packetType = "DATA";//Data block, currently just a packet
-				
-				else if(received[0] == 0x11)
-					packetType = "ACK";//Acknowledge block, currently just a packet
+			
+			if(received[0] == 0x10){ 
+				packetType = "DATA";//Data block, currently just a packet
+				fileprint = true;
 			}
+				
+			else if(received[0] == 0x11)
+				packetType = "ACK";//Acknowledge block, currently just a packet
+				
 			else if(received[0] == 0x01) {
-					packetType = "RRQ";//Read request
-					fileprint = true;
+				packetType = "RRQ";//Read request
+				fileprint = true;
 			}
 			else if(received[0] == 0x02) {
-					packetType = "WRQ";//write request
-					fileprint = true;
+				packetType = "WRQ";//write request
+				fileprint = true;
 			}
 		
 			else

@@ -5,6 +5,7 @@
  * @Purpose: This class prompts the user for what mode they would like to use.
  * It then sets up the 3 main threads used in this iteration
  */
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class ThreadRunner
