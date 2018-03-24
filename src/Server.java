@@ -8,6 +8,7 @@
  * server thread closes itself once it's handled one packet
  */
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 public class Server extends Thread 
 {
 	boolean mode;
@@ -38,6 +39,7 @@ public class Server extends Thread
 		DatagramPacket packetR = new DatagramPacket(new byte[512],512);
 		InetAddress localHostAddress = InetAddress.getLocalHost();
 		DatagramPacket packetS = new DatagramPacket(new byte[1],1,localHostAddress,23);
+		
 		while(true)
 		{	
 			socketR.receive(packetR);
@@ -53,7 +55,8 @@ public class Server extends Thread
 				packetS.setData(returning);
 			}
 			else {throw new Exception("InvalidException");}//if it's invalid
-		
+			
+			
 			socketR.send(packetS);
 		}
 	}

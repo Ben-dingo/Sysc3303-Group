@@ -21,6 +21,7 @@ public class Client extends Thread implements ActionListener
 	boolean mode;
 	String message;
 	boolean shutoff = false;
+	static String destination;
 	
 	protected Semaphore sema = new Semaphore(0);
 	
@@ -101,7 +102,7 @@ public class Client extends Thread implements ActionListener
 			while(true) 
 			{
 				if(shutoff == true) {break;}
-				textArea.append("Enter directory.\n");
+				textArea.append("Enter source directory.\n");
 				sema.acquire();
 				message = input;
 				if(message.toLowerCase().equals("quit"))
@@ -115,10 +116,32 @@ public class Client extends Thread implements ActionListener
 					break;
 				}
 				else {
-					textArea.append("A message must be entered to procede.\n");
+					textArea.append("A directory must be entered to procede.\n");
 				}
 				
 			}
+			
+			while(true) 
+			{
+				if(shutoff == true) {break;}
+				textArea.append("Enter destination directory.\n");
+				sema.acquire();
+				if(message.toLowerCase().equals("quit"))
+				{
+					textArea.append("Shutting down server.\n");
+						shutoff = true;
+						break;
+				}
+				else if(message != "") {
+					destination = input;
+					break;
+				}
+				else {
+					textArea.append("A directory must be entered to procede.\n");
+				}
+				
+			}
+			
 			if(shutoff == true)//performs shutdown for all running threads
 			{
 				Thread.currentThread().interrupt();
@@ -159,6 +182,7 @@ public class Client extends Thread implements ActionListener
 					if(this.mode) {textArea.append(packetPrint.Print("Writing packet",packetS));}
 				}
 			}
+			
 			socket.send(packetS);
 			if(shutoff == true) {break;}
 			//time passes here while waiting for response from server
@@ -166,7 +190,11 @@ public class Client extends Thread implements ActionListener
 			if(this.mode) {textArea.append(packetPrint.Print("Received from Host", packetR));}
 		}
 	}
-
+	
+	public static String getDest() {
+		return destination;
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		input = textField.getText();
