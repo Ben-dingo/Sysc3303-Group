@@ -52,13 +52,15 @@ public class server extends Thread
 			}
 			else if(received[0] == 0x02)//if its a writing packet
 			{
-				writeProcess(socketR, packetR,packetS);
+				String filename = new String(packetR.getData(),StandardCharsets.UTF_8);
+				if(filename.length() >= 9) {filename = filename.substring(9);}
+				writeProcess(socketR, packetR,packetS, filename);
 			}
 			else {throw new Exception("InvalidException");}//if it's invalid
 		}
 	}
 	
-	public void writeProcess(DatagramSocket socket, DatagramPacket packetR, DatagramPacket packetS) throws Exception {
+	public void writeProcess(DatagramSocket socket, DatagramPacket packetR, DatagramPacket packetS, String filename) throws Exception {
 		socket.send(packetS);
 		String text = "";
 		int cur = 0;
@@ -86,10 +88,12 @@ public class server extends Thread
 			socket.send(packetS);
 		}
 		
-		//write text to file here
+		packetFile packet2 = new packetFile();
+        packet2.modifyText(filename, text);
 	}
 	
 	public void readProcess(DatagramSocket socket,DatagramPacket packetR, DatagramPacket packetS) throws Exception {
+		
 		socket.send(packetS);
 		socket.receive(packetR);
 		
@@ -98,7 +102,7 @@ public class server extends Thread
 
 		packetFile packet = new packetFile();
 		String message = packet.importText(received);
-		
+		System.out.println(message);
 		int fin = (int) Math.ceil(message.length()/500);
 		String pieces = "";
 		for(int cur = 0; cur < fin; cur++)
