@@ -28,7 +28,11 @@ public class ErrorSim extends Thread implements ActionListener
 {
 	boolean mode;
 	
-	DatagramSocket simErrorSocket;
+	DatagramSocket socketR, socketS, simErrorSocket;
+	InetAddress localHostAddress;
+	DatagramPacket packetR;
+	DatagramPacket simPacket;
+	
 	protected Semaphore sema = new Semaphore(0);
 	
 	protected JPanel pane;
@@ -49,11 +53,26 @@ public class ErrorSim extends Thread implements ActionListener
 		try {
 			simErrorSocket = new DatagramSocket(50);
 			createAndShowGUI();
+			//recievePacket();
 			ui();
 		} catch (Exception e) {
 			System.out.println("Error Sim has failed");
 		}
 	}
+	
+	/*public void recievePacket() throws Exception {
+		try {
+			socketR = new DatagramSocket(23, InetAddress.getLocalHost());
+			socketS = new DatagramSocket();
+			simErrorSocket = new DatagramSocket(50);
+			InetAddress localHostAddress = InetAddress.getLocalHost();
+			DatagramPacket packetR = new DatagramPacket(new byte[512], 512);
+		} catch (SocketException | UnknownHostException e) {
+			e.printStackTrace();
+		}
+		socketR.receive(packetR);// receives packet from client
+		simPacket = packetR; //Create a copy of the recieve packet to use in the error simulator
+	}*/
 	
 	public void ErrorSimPurpose() throws Exception
 	{
@@ -85,8 +104,7 @@ public class ErrorSim extends Thread implements ActionListener
 	
 	public void errorInterface() {
 		byte[]data = "Error Simulator".getBytes();
-		DatagramPacket simPacket = new DatagramPacket(data, data.length);
-		
+		simPacket = new DatagramPacket(data, data.length);		
 		
 		textArea.append("What do you want to simulate?\n");
 		textArea.append("1: lose a packet\n");
@@ -124,14 +142,7 @@ public class ErrorSim extends Thread implements ActionListener
 	}
 
 	public void lostSimError(int type) {
-		/*DatagramSocket simSocket;
-		try {
-			simSocket = new DatagramSocket();
-		} catch (SocketException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}*/
-
+		
 		textArea.append("A packet has been lost\n");
 
 		switch (type) {
