@@ -34,33 +34,31 @@ public class packetPrint
 			String packetType = "";
 			
 			
-			if(received.length == 1) {
-				if(received[0] == 0x10) 
-					packetType = "DATA";//Data block, currently just a packet
-				
-				else if(received[0] == 0x11)
-					packetType = "ACK";//Acknowledge block, currently just a packet
+			
+			if(received[0] == 0x10){ 
+				packetType = "DATA";//Data block, currently just a packet
+				fileprint = true;
 			}
+				
+			else if(received[0] == 0x11)
+				packetType = "ACK";//Acknowledge block, currently just a packet
+				
 			else if(received[0] == 0x01) {
-					packetType = "RRQ";//Read request
-					fileprint = true;
+				packetType = "RRQ";//Read request
+				fileprint = true;
 			}
 			else if(received[0] == 0x02) {
-					packetType = "WRQ";//write request
-					fileprint = true;
+				packetType = "WRQ";//write request
+				fileprint = true;
 			}
 		
 			else
 				packetType = "ERROR";
-			if(filename.length() >= 9) {filename = filename.substring(9);}
+			
 			returns += ("Packet type: " + packetType + "\n");
 			returns += ("Packet Length: " + packet.getLength() + "\n");
 			if(fileprint){returns += ("Text in file: " + filename + "\n");}
 			returns += ("Mode: Verbose\n");
-			
-			packetFile packet2 = new packetFile();
-			//String contents = new String(packetS.getData(),StandardCharsets.UTF_8);
-			packet2.modifyText("myFile.txt", filename);
 			
 			return returns;
 		}

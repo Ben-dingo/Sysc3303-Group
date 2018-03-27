@@ -17,7 +17,7 @@ public class packetFile{
 	 * @param directory --> The location of the text file.
 	 * @return the data within the text file.
 	 */
-	public static String importText(String directory) {
+	public String importText(String directory) {
 
 		File f = new File(directory); //Obtain the file from the directory.
 		

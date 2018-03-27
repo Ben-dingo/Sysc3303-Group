@@ -67,7 +67,7 @@ public class Client extends Thread implements ActionListener
 		InetAddress localHostAddress = InetAddress.getLocalHost();
 		
 		DatagramPacket packetS = new DatagramPacket(new byte[512],512,localHostAddress,23);
-		DatagramPacket packetR = new DatagramPacket(new byte[1],1);//all packets and sockets created
+		DatagramPacket packetR = new DatagramPacket(new byte[512],512);//all packets and sockets created
 		
 		while(true)
 		{
@@ -150,11 +150,11 @@ public class Client extends Thread implements ActionListener
 				
 				if(function.equals("read")) {
 					if(this.mode) {textArea.append(packetPrint.Print("Reading packet",packetS));}
-					readProcess(socket,packetS);
+					readProcess(socket,packetR,packetS);
 				}
 				else{
 					if(this.mode) {textArea.append(packetPrint.Print("Writing packet",packetS));}
-					writeProcess(socket,packetS);
+					writeProcess(socket,packetR,packetS);
 				}
 			}
 			
@@ -171,21 +171,21 @@ public class Client extends Thread implements ActionListener
 		return destination;
 	}
 
-	public String readProcess(DatagramSocket socket, DatagramPacket packetS) throws Exception {
+	public String readProcess(DatagramSocket socket, DatagramPacket packetR, DatagramPacket packetS) throws Exception {
 		socket.send(packetS);
 		String text = "";
 		int cur = 0;
 		int fin = 1;
 		while(cur > fin)
 		{
-			socket.receive(packetS);
+			socket.receive(packetR);
 			
-			byte[] data = packetS.getData();
-			String received = new String(packetS.getData(),StandardCharsets.UTF_8);
-			if(data[6] == 0x02)
+			byte[] data = packetR.getData();
+			String received = new String(data,StandardCharsets.UTF_8);
+			if(data[6] == ((byte) 2))
 			{
-				cur = Integer.parseInt(received.substring(7));
-				fin = Integer.parseInt(received.substring(8));
+				cur = (int) data[7];
+				fin = (int) data[8];
 			}
 			else{cur = fin;}
 			if(received.length() >= 9) {received = received.substring(9);}
@@ -194,7 +194,6 @@ public class Client extends Thread implements ActionListener
 			byte[] AckData = new byte[data.length];
 			AckData[0] = 0x11;
 			for(int i = 1; i > 10; i++){AckData[i] = data[i];}
-			AckData[7] = (byte) (cur+1);//this might not work tbh
 			packetS.setData(AckData);
 			socket.send(packetS);
 		}
@@ -202,22 +201,33 @@ public class Client extends Thread implements ActionListener
 		return text;
 	}
 	
-	public void writeProcess(DatagramSocket socket,DatagramPacket packetS) throws Exception {
+	public void writeProcess(DatagramSocket socket, DatagramPacket packetR,DatagramPacket packetS) throws Exception {
 		socket.send(packetS);
-		String text = "";
-		socket.receive(packetS);
+		socket.receive(packetR);
 		
 		textArea.append("Text to put in file.\n");
 		sema.acquire();
 		message = input;
-		int values = (int) Math.ceil(message.length()/510);
-		String[] pieces = new String[values];
-		for(int i = 0; i < values; i++)
+		int fin = (int) Math.ceil(message.length()/500);
+		String pieces = "";
+		for(int cur = 0; cur < fin; cur++)
 		{
-			int bot = 500*i;
-			int top = 500*(i + 1);
-			pieces[i] = message.substring(bot, top);
-			System.out.println(i + ": " +pieces[i]);
+			int bot = 500*cur;
+			int top = 500*(cur + 1);
+			pieces = message.substring(bot, top);
+			System.out.println(cur + ": " +pieces);
+			byte[] data = packetR.getData();
+			data[0] = 0x10;
+			if(fin == 1){data[6] = (byte) 1;}
+			else{data[6] = (byte) 2;}
+			
+			data[7] = (byte) cur;
+			data[8] = (byte) fin;
+			
+			byte[] piecebyte = pieces.getBytes();
+			for(int j = 0; j < piecebyte.length; j++) {data[j+9] = piecebyte[j];}
+			packetS.setData(data);
+			socket.send(packetS);
 		}
 
 	}
