@@ -9,21 +9,20 @@
  * sent over to the client. For iteration 1 this only passes packets but later
  * it will cause errors in the packets
  */
+
+import java.io.IOException;
+import java.net.*;
+import java.util.concurrent.TimeUnit;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.*;
-import java.util.Random;
-import java.util.Scanner;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
 public class ErrorSim extends Thread implements ActionListener
 {
 	boolean mode;
@@ -84,20 +83,20 @@ public class ErrorSim extends Thread implements ActionListener
 			while(true)
 			{
 				socketR.receive(packetR);//receives packet from client
-				if(this.mode) {textArea.append(packetPrint.Print("Received from Client",packetR));}
+				if(this.mode) {System.out.println(packetPrint.Print("Received from Client",packetR));}
 				
 				DatagramPacket packetS = new DatagramPacket(packetR.getData(),packetR.getLength(),localHostAddress,69);
-				if(this.mode) {textArea.append(packetPrint.Print("Sending to Server",packetS));}
+				if(this.mode) {System.out.println(packetPrint.Print("Sending to Server",packetS));}
 				socketS.send(packetS);//passes packet along
 				
 				String message = new String(packetR.getData());
 				
 				DatagramPacket ServerPacketR = new DatagramPacket(new byte[512],512);
 				socketR.receive(ServerPacketR);//receives response packet from server
-				if(this.mode) {textArea.append(packetPrint.Print("Received from Server", ServerPacketR));}
+				if(this.mode) {System.out.println(packetPrint.Print("Received from Server", ServerPacketR));}
 				
 				DatagramPacket ServerPacketS = new DatagramPacket(ServerPacketR.getData(),ServerPacketR.getLength(),localHostAddress,packetR.getPort());
-				if(this.mode) {textArea.append(packetPrint.Print("Sending to Client",ServerPacketS));}
+				if(this.mode) {System.out.println(packetPrint.Print("Sending to Client",ServerPacketS));}
 				socketS.send(ServerPacketS);//sends response to client
 			}
 	}
@@ -114,6 +113,7 @@ public class ErrorSim extends Thread implements ActionListener
 		textArea.append("5: Unknown TID\n");
 		textArea.append("0: quit\n");
 		
+		//Scanner scan = new Scanner(System.in);
 		try {sema.acquire();}
 		catch (InterruptedException e1) {}
 		String s = input;
@@ -166,7 +166,7 @@ public class ErrorSim extends Thread implements ActionListener
 	 * @param type
 	 */
 	public void delaySimError(int type) {
-		textArea.append("Duplicate Packets have been dected!\n");
+		textArea.append("Delayed Packets have been dected!\n");
 		String msg = "";
 		switch(type) {
 		case 1:	
@@ -210,12 +210,13 @@ public class ErrorSim extends Thread implements ActionListener
 	 */
 	public void tidError(DatagramPacket p) {
 		textArea.append("Sending packet from different Port: " + simErrorSocket.getLocalPort() + "\n");
-		try {
+		/*try {
 			simErrorSocket.send(p);
 		} catch (IOException e) {
 			//e.printStackTrace();
 			textArea.append("Unable to send, packet, to unknown TID.");
-		}
+		}*/
+		textArea.append("Unable to send packet to unknow TID\n");
 		textArea.append("\n");
 		ui();
 	}
@@ -249,7 +250,7 @@ public class ErrorSim extends Thread implements ActionListener
 		
 		textArea.append("What function do you want to operate in?\n");
 		textArea.append("(N)ormal mode or (E)rror Sim mode or (Q)uit.\n");
-		
+		//Scanner scan = new Scanner(System.in);
 		try {sema.acquire();}
 		catch (InterruptedException e1) {}
 		String s = input;
@@ -283,7 +284,7 @@ public class ErrorSim extends Thread implements ActionListener
 	private void createAndShowGUI() {
         JFrame frame = new JFrame("ErrorSim");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
+        frame.setResizable(true);
         
         textField.addActionListener(this);
         textArea.setEditable(false);
