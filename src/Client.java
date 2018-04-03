@@ -173,11 +173,16 @@ public class Client extends Thread implements ActionListener
 		String text = "";
 		int cur = 0;
 		int fin = 1;
+		
 		while(cur < fin)
 		{
 			socket.receive(packetR);
-			textArea.append(packetPrint.Print("Received from ErrorSim",packetR));
 			byte[] data = packetR.getData();
+			byte[] AckData = new byte[512];
+			for(int i = 0; i > 10; i++){AckData[i] = data[i]; System.out.println(data[i]);}
+			AckData[0] = 0x11;
+			
+			textArea.append(packetPrint.Print("Received from ErrorSim",packetR));
 			String received = new String(data,StandardCharsets.UTF_8);
 			if(data[6] == ((byte) 2))
 			{
@@ -185,20 +190,15 @@ public class Client extends Thread implements ActionListener
 				fin = (int) data[8];
 			}
 			else{cur = fin;}
-			if(received.length() >= 9) {received = received.substring(9);}
 			text += received;
+			int l = packetPrint.filenameLength(packetR);
+			if(received.length() >= 9) {received = received.substring(9,l);}
 			
-			System.out.println(cur);
-			System.out.println(fin);
-			
-			byte[] AckData = new byte[data.length];
-			AckData[0] = 0x11;
-			for(int i = 1; i > 10; i++){AckData[i] = data[i];}
-			packetS.setData(AckData);
+			packetS.setData(packetR.getData());
 			socket.send(packetS);
 			textArea.append(packetPrint.Print("Sending to ErrorSim",packetS));
 		}
-		textArea.append("Something bad happened\n");
+		textArea.append(text + "\n");
 		return text;
 	}
 	
@@ -206,19 +206,33 @@ public class Client extends Thread implements ActionListener
 		socket.send(packetS);
 		socket.receive(packetR);
 		
+		
+		byte[] data = new byte[512];
+		byte[] sent = packetR.getData();
+		
+		
+		textArea.append(packetPrint.Print("Received from ErrorSim",packetR));
+		
 		textArea.append("Text to put in file.\n");
 		sema.acquire();
 		message = input;
-		int fin = (int) Math.ceil(message.length()/500);
+		int fin = (int) Math.ceil(message.length()/500)+ 1;
 		String pieces = "";
-		for(int cur = 0; cur < fin; cur++)
+		for(int cur = 1; cur <= fin; cur++)
 		{
-			int bot = 500*cur;
-			int top = 500*(cur + 1);
-			pieces = message.substring(bot, top);
+			if(fin > cur)
+			{
+				int bot = 500*(cur-1);
+				int top = 500*(cur);
+				pieces = message.substring(bot, top);
+			}
+			else
+				pieces = message.substring(500*(cur-1));
+			
 			System.out.println(cur + ": " +pieces);
-			byte[] data = packetR.getData();
+
 			data[0] = 0x10;
+			for(int j = 1; j < 6; j++) {data[j] = sent[j];}
 			if(fin == 1){data[6] = (byte) 1;}
 			else{data[6] = (byte) 2;}
 			
@@ -227,8 +241,12 @@ public class Client extends Thread implements ActionListener
 			
 			byte[] piecebyte = pieces.getBytes();
 			for(int j = 0; j < piecebyte.length; j++) {data[j+9] = piecebyte[j];}
+			
 			packetS.setData(data);
 			socket.send(packetS);
+			textArea.append(packetPrint.Print("Sending to ErrorSim",packetS));
+			socket.receive(packetR);
+			textArea.append(packetPrint.Print("Received from ErrorSim",packetR));
 		}
 
 	}

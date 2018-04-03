@@ -84,7 +84,6 @@ public class packetPrint
 				if(received[j] == 0x00)
 				{
 					packet.setLength(j);
-					System.out.println(j);
 					return(j);
 				}
 			}

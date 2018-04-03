@@ -52,22 +52,28 @@ public class server extends Thread
 			}
 			else if(received[0] == 0x02)//if its a writing packet
 			{
-				String filename = new String(packetR.getData(),StandardCharsets.UTF_8);
-				if(filename.length() >= 9) {filename = filename.substring(9);}
-				writeProcess(socketR, packetR,packetS, filename);
+				writeProcess(socketR, packetR,packetS);
 			}
 			else {throw new Exception("InvalidException");}//if it's invalid
 		}
 	}
 	
-	public void writeProcess(DatagramSocket socket, DatagramPacket packetR, DatagramPacket packetS, String filename) throws Exception {
+	public void writeProcess(DatagramSocket socket, DatagramPacket packetR, DatagramPacket packetS) throws Exception {
+		
+		String filename = new String(packetR.getData(),StandardCharsets.UTF_8);
+		int l = packetPrint.filenameLength(packetR);
+		if(filename.length() >= 9) {filename = filename.substring(9,l);}
+		
+		System.out.println(filename);
+		
 		socket.send(packetS);
 		String text = "";
 		int cur = 0;
 		int fin = 1;
-		while(cur > fin)
+		while(cur < fin)
 		{
 			socket.receive(packetR);
+			
 			
 			byte[] data = packetR.getData();
 			String received = new String(data,StandardCharsets.UTF_8);
@@ -77,14 +83,16 @@ public class server extends Thread
 				fin = (int) data[8];
 			}
 			else{cur = fin;}
-			if(received.length() >= 9) {received = received.substring(9);}
+			
+			l = packetPrint.filenameLength(packetR);
+			if(received.length() >= 9) {received = received.substring(9,l);}
 			text += received;
 			
 			byte[] AckData = new byte[data.length];
 			AckData[0] = 0x11;
 			for(int i = 1; i > 10; i++){AckData[i] = data[i];}
 			
-			packetS.setData(AckData);
+			packetS.setData(data);
 			socket.send(packetS);
 		}
 		
@@ -104,12 +112,11 @@ public class server extends Thread
 
 		packetFile packet = new packetFile();
 		String message = packet.importText(received);
-		System.out.println("message: " + message);
 		int fin = (int) Math.ceil(message.length()/500) + 1;
 		String pieces = "";
 		for(int cur = 1; cur <= fin; cur++)
 		{
-			if(fin > (cur+1))
+			if(fin > (cur))
 			{
 				int bot = 500*(cur - 1);
 				int top = 500*(cur);
@@ -129,18 +136,11 @@ public class server extends Thread
 			
 			byte[] piecebyte = pieces.getBytes();
 			
-			String test = new String(piecebyte,StandardCharsets.UTF_8);
-			System.out.println(test);
-			
 			for(int j = 1; j < 6; j++) {data[j] = sent[j];}
 			for(int j = 0; j < piecebyte.length; j++) {data[j+9] = piecebyte[j];}
 			for(int j = (9 + piecebyte.length); j > 510; j++) {data[j] = 0x00;}
 			
-			String test2 = new String(data,StandardCharsets.UTF_8);
-			System.out.println(test2);
-			
 			packetS.setData(data);
-			System.out.println(packetPrint.Print("sending to Error", packetS));
 			socket.send(packetS);
 			socket.receive(packetR);
 		}
