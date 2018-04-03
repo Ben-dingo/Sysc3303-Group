@@ -17,17 +17,12 @@ public class ThreadRunner
 		String message;
 		Scanner reader = new Scanner(System.in);
 		System.out.println("Server started.\nEnter 'Quit' to shut down server.");
-		//String test = "test message";
-		//packetFile packet = new packetFile();
-		//packet.exportText("");
-		//packet.modifyText("myFile.txt", "message3");
-		//packetFile.modifyText("myFile.txt", "message2");
 		while(true)//prompts user for input
 		{
-			
+
 			System.out.println("'Quiet' or 'Verbose'?");
 			String selection = reader.next();
-			
+
 			if(selection.toLowerCase().equals("quiet"))
 			{
 				break;
@@ -45,19 +40,41 @@ public class ThreadRunner
 			}
 			else {System.out.println("input must be 'Quiet' or 'Verbose'");}
 		}
-		
-		System.out.println("How many Clients would you like to start?");
-		int selection = reader.nextInt();
-		for(int i = 1; i <= selection; i++)
-		{
-			Client clientThread = new Client(mode,shutoff);
-			clientThread.start();
+
+		System.out.println("Client, Server or both?");
+		while(true) {
+			String selection = reader.next();
+			if(selection.toLowerCase().equals("client"))
+			{
+				Client clientThread = new Client(mode,shutoff);
+				clientThread.start();
+				ErrorSim ErrorSimThread = new ErrorSim(mode);//creates 3 threads
+				ErrorSimThread.start();//runs threads
+				break;
+			}
+			else if(selection.toLowerCase().equals("server"))
+			{
+				MasterServer serverThread = new MasterServer(mode);
+				serverThread.start();
+				break;
+			}	
+			else if(selection.toLowerCase().equals("both"))
+			{
+				MasterServer serverThread = new MasterServer(mode);
+				serverThread.start();
+				Client clientThread = new Client(mode,shutoff);
+				clientThread.start();
+				ErrorSim ErrorSimThread = new ErrorSim(mode);//creates 3 threads
+				ErrorSimThread.start();//runs threads
+				break;
+			}
+			else if(selection.toLowerCase().equals("quit"))
+			{
+				break;
+			}
+			else {
+				System.out.println("invalid input");
+			}
 		}
-		
-		MasterServer serverThread = new MasterServer(mode);
-		ErrorSim ErrorSimThread = new ErrorSim(mode);//creates 3 threads
-		
-		serverThread.start();
-		ErrorSimThread.start();//runs threads
 	}
 }
