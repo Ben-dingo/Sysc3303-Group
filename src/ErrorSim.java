@@ -27,21 +27,21 @@ import javax.swing.JTextField;
 public class ErrorSim extends Thread implements ActionListener
 {
 	boolean mode;
-	
+
 	DatagramSocket simErrorSocket;
 	protected Semaphore sema = new Semaphore(0);
-	
+
 	protected JPanel pane;
 	protected JTextField textField = new JTextField(35);
-    protected JTextArea textArea = new JTextArea(10, 35);
-    
-    String input = "";
-    
+	protected JTextArea textArea = new JTextArea(10, 35);
+
+	String input = "";
+
 	public ErrorSim(boolean mode)
 	{
 		this.mode = mode;
 	}
-	
+
 	//below is the method that runs when the thread starts, it just
 	//catches errors in the method it calls
 	public void run()
@@ -54,40 +54,46 @@ public class ErrorSim extends Thread implements ActionListener
 			System.out.println("Error Sim has failed");
 		}
 	}
-	
+
 	public void ErrorSimPurpose() throws Exception
 	{
-			DatagramSocket socketR = new DatagramSocket(23,InetAddress.getLocalHost());
-			DatagramSocket socketS = new DatagramSocket();
-			InetAddress localHostAddress = InetAddress.getLocalHost();
-			DatagramPacket packetR = new DatagramPacket(new byte[512],512);
-			
-			while(true)
-			{
-				socketR.receive(packetR);//receives packet from client
-				if(this.mode) {textArea.append(packetPrint.Print("Received from Client",packetR));}
-				
-				DatagramPacket packetS = new DatagramPacket(packetR.getData(),packetR.getLength(),localHostAddress,69);
-				if(this.mode) {textArea.append(packetPrint.Print("Sending to Server",packetS));}
-				socketS.send(packetS);//passes packet along
-				
-				String message = new String(packetR.getData());
-				
-				DatagramPacket ServerPacketR = new DatagramPacket(new byte[512],512);
-				socketR.receive(ServerPacketR);//receives response packet from server
-				if(this.mode) {textArea.append(packetPrint.Print("Received from Server", ServerPacketR));}
-				
-				DatagramPacket ServerPacketS = new DatagramPacket(ServerPacketR.getData(),ServerPacketR.getLength(),localHostAddress,packetR.getPort());
-				if(this.mode) {textArea.append(packetPrint.Print("Sending to Client",ServerPacketS));}
-				socketS.send(ServerPacketS);//sends response to client
-			}
+		textArea.append("please enter server IP");
+		sema.acquire();
+		String IP = input;
+		InetAddress serverHost = InetAddress.getByName(IP);
+		textArea.append("you have entered: " + serverHost.getHostAddress() + "\n");
+
+		DatagramSocket socketR = new DatagramSocket(23,InetAddress.getLocalHost());
+		DatagramSocket socketS = new DatagramSocket();
+		InetAddress localHostAddress = InetAddress.getLocalHost();
+		DatagramPacket packetR = new DatagramPacket(new byte[512],512);
+
+		while(true)
+		{
+			socketR.receive(packetR);//receives packet from client
+			if(this.mode) {textArea.append(packetPrint.Print("Received from Client",packetR));}
+
+			DatagramPacket packetS = new DatagramPacket(packetR.getData(),packetR.getLength(),serverHost,69);
+			if(this.mode) {textArea.append(packetPrint.Print("Sending to Server",packetS));}
+			socketS.send(packetS);//passes packet along
+
+			String message = new String(packetR.getData());
+
+			DatagramPacket ServerPacketR = new DatagramPacket(new byte[512],512);
+			socketR.receive(ServerPacketR);//receives response packet from server
+			if(this.mode) {textArea.append(packetPrint.Print("Received from Server", ServerPacketR));}
+
+			DatagramPacket ServerPacketS = new DatagramPacket(ServerPacketR.getData(),ServerPacketR.getLength(),localHostAddress,packetR.getPort());
+			if(this.mode) {textArea.append(packetPrint.Print("Sending to Client",ServerPacketS));}
+			socketS.send(ServerPacketS);//sends response to client
+		}
 	}
-	
+
 	public void errorInterface() {
 		byte[]data = "Error Simulator".getBytes();
 		DatagramPacket simPacket = new DatagramPacket(data, data.length);
-		
-		
+
+
 		textArea.append("What do you want to simulate?\n");
 		textArea.append("1: lose a packet\n");
 		textArea.append("2: delay a packet\n");
@@ -95,7 +101,7 @@ public class ErrorSim extends Thread implements ActionListener
 		textArea.append("4: Illegal TIP Orperation\n");
 		textArea.append("5: Unknown TID\n");
 		textArea.append("0: quit\n");
-		
+
 		try {sema.acquire();}
 		catch (InterruptedException e1) {}
 		String s = input;
@@ -145,7 +151,7 @@ public class ErrorSim extends Thread implements ActionListener
 			textArea.append("A DATA packet seems to have been lost...\n");
 			break;
 		}
-		
+
 		ui();
 	}
 
@@ -168,7 +174,7 @@ public class ErrorSim extends Thread implements ActionListener
 			msg = "Request packet is delayed";
 			break;
 		}
-		
+
 		textArea.append("ErrorSim: "+ msg +". Waiting for packet...\n");
 		try {
 			TimeUnit.MILLISECONDS.sleep(5000);
@@ -178,9 +184,9 @@ public class ErrorSim extends Thread implements ActionListener
 		textArea.append("ErrorSim: Packet recieved and sent!\n");
 		ui();
 	}
-	
+
 	public void duplicateSimError() {
-		
+
 		textArea.append("Duplicating packets....\n");
 		try {
 			textArea.append("First Packet Sent...\n");
@@ -208,14 +214,14 @@ public class ErrorSim extends Thread implements ActionListener
 		textArea.append("\n");
 		ui();
 	}
-	
+
 	/***
 	 * 
 	 * @param p
 	 */
 	public void packetError(DatagramPacket p, int type) {
 		textArea.append("Packet has been Corrupted \n");
-		
+
 		switch(type) {
 		case 1:
 			textArea.append("Opcode has been changed\n");
@@ -227,18 +233,18 @@ public class ErrorSim extends Thread implements ActionListener
 			textArea.append("The last bytes have been changed\n");
 			break;
 		}
-		
+
 		textArea.append("\n");
 		ui();
 	}
-	
+
 	/***************************************************************/
 	public void ui() {
 		//ErrorSim e = this;
-		
+
 		textArea.append("What function do you want to operate in?\n");
 		textArea.append("(N)ormal mode or (E)rror Sim mode or (Q)uit.\n");
-		
+
 		try {sema.acquire();}
 		catch (InterruptedException e1) {}
 		String s = input;
@@ -257,35 +263,35 @@ public class ErrorSim extends Thread implements ActionListener
 			//System.exit(0);
 		}
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		input = textField.getText();
-        textArea.append(input + "\n");
-        textField.setText("");
-        
-        sema.release();
-        
-        textArea.setCaretPosition(textArea.getDocument().getLength());
+		textArea.append(input + "\n");
+		textField.setText("");
+
+		sema.release();
+
+		textArea.setCaretPosition(textArea.getDocument().getLength());
 	}
-	
+
 	private void createAndShowGUI() {
-        JFrame frame = new JFrame("ErrorSim");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
-        
-        textField.addActionListener(this);
-        textArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        
-        pane = new JPanel();
-        pane.setLayout(new BorderLayout());
-        pane.add(textField, BorderLayout.NORTH);
-        pane.add(scrollPane, BorderLayout.CENTER);
-        frame.add(pane);
- 
-        frame.pack();
-        frame.setVisible(true);
-        frame.toFront();
-    }
+		JFrame frame = new JFrame("ErrorSim");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setResizable(false);
+
+		textField.addActionListener(this);
+		textArea.setEditable(false);
+		JScrollPane scrollPane = new JScrollPane(textArea);
+
+		pane = new JPanel();
+		pane.setLayout(new BorderLayout());
+		pane.add(textField, BorderLayout.NORTH);
+		pane.add(scrollPane, BorderLayout.CENTER);
+		frame.add(pane);
+
+		frame.pack();
+		frame.setVisible(true);
+		frame.toFront();
+	}
 }

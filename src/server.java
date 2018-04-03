@@ -41,8 +41,10 @@ public class server extends Thread
 		while(true)
 		{	
 			socketR.receive(packetR);
-			InetAddress localHostAddress = InetAddress.getLocalHost();
-			DatagramPacket packetS = new DatagramPacket(new byte[512],512,localHostAddress,23);
+			byte data[] = packetR.getData();
+			byte[] ip = {data[9],data[10],data[11],data[12]};
+			InetAddress ClientAddress = InetAddress.getByAddress(ip);
+			DatagramPacket packetS = new DatagramPacket(new byte[512],512,ClientAddress,23);
 			packetS.setData(packetR.getData());
 			
 			byte[] received = packetR.getData();
@@ -62,7 +64,7 @@ public class server extends Thread
 		
 		String filename = new String(packetR.getData(),StandardCharsets.UTF_8);
 		int l = packetPrint.filenameLength(packetR);
-		if(filename.length() >= 9) {filename = filename.substring(9,l);}
+		if(filename.length() >= 13) {filename = filename.substring(13,l);}
 		
 		System.out.println(filename);
 		
@@ -85,12 +87,12 @@ public class server extends Thread
 			else{cur = fin;}
 			
 			l = packetPrint.filenameLength(packetR);
-			if(received.length() >= 9) {received = received.substring(9,l);}
+			if(received.length() >= 13) {received = received.substring(13,l);}
 			text += received;
 			
 			byte[] AckData = new byte[data.length];
 			AckData[0] = 0x11;
-			for(int i = 1; i > 10; i++){AckData[i] = data[i];}
+			for(int i = 1; i > 13; i++){AckData[i] = data[i];}
 			
 			packetS.setData(data);
 			socket.send(packetS);
@@ -108,22 +110,22 @@ public class server extends Thread
 		byte[] filename=packetR.getData();
 		
 		String received = new String(filename,StandardCharsets.UTF_8);
-		if(received.length() >= 9) {received = received.substring(9,i);}
+		if(received.length() >= 13) {received = received.substring(13,i);}
 
 		packetFile packet = new packetFile();
 		String message = packet.importText(received);
-		int fin = (int) Math.ceil(message.length()/500) + 1;
+		int fin = (int) Math.ceil(message.length()/496) + 1;
 		String pieces = "";
 		for(int cur = 1; cur <= fin; cur++)
 		{
 			if(fin > (cur))
 			{
-				int bot = 500*(cur - 1);
-				int top = 500*(cur);
+				int bot = 496*(cur - 1);
+				int top = 496*(cur);
 				pieces = message.substring(bot, top);
 			}
 			else
-				pieces = message.substring(500*(cur - 1));
+				pieces = message.substring(496*(cur - 1));
 			
 			System.out.println(cur + ": " +pieces);
 			
@@ -138,7 +140,7 @@ public class server extends Thread
 			
 			for(int j = 1; j < 6; j++) {data[j] = sent[j];}
 			for(int j = 0; j < piecebyte.length; j++) {data[j+9] = piecebyte[j];}
-			for(int j = (9 + piecebyte.length); j > 510; j++) {data[j] = 0x00;}
+			for(int j = (13 + piecebyte.length); j > 510; j++) {data[j] = 0x00;}
 			
 			packetS.setData(data);
 			socket.send(packetS);

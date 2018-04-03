@@ -23,6 +23,7 @@ public class Client extends Thread implements ActionListener
 	String message;
 	boolean shutoff = false;
 	static String destination;
+	InetAddress localHostAddress;
 	
 	protected Semaphore sema = new Semaphore(0);
 	
@@ -63,8 +64,11 @@ public class Client extends Thread implements ActionListener
 	
 	public void ClientPurpose() throws Exception
 	{
+		localHostAddress = InetAddress.getLocalHost();
+		textArea.append("your IP is: " + localHostAddress.getHostAddress() + "\n");
+		byte[] ip = localHostAddress.getAddress();
+		
 		DatagramSocket socket = new DatagramSocket();
-		InetAddress localHostAddress = InetAddress.getLocalHost();
 		
 		DatagramPacket packetS = new DatagramPacket(new byte[512],512,localHostAddress,23);
 		DatagramPacket packetR = new DatagramPacket(new byte[512],512);//all packets and sockets created
@@ -131,7 +135,7 @@ public class Client extends Thread implements ActionListener
 			else
 			{
 				byte[] directory = message.getBytes();
-				byte[] toSend = new byte[directory.length + 10];
+				byte[] toSend = new byte[directory.length + 14];
 				if(function.equals("read")) {
 					toSend[0] = 0x01;
 				}
@@ -140,8 +144,9 @@ public class Client extends Thread implements ActionListener
 				}
 				
 				for(int i = 1; i <= 8; i++) {toSend[i] = '@';}
+				for(int i = 0; i < 4; i++) {toSend[i+9] = ip[i];}
 				for(int j = 0; j < directory.length; j++) {
-					toSend[j+9] = directory[j];//puts string into correct spot in byte array
+					toSend[j+13] = directory[j];//puts string into correct spot in byte array
 				}
 				
 				toSend[toSend.length-1] = 0x00;
@@ -170,6 +175,7 @@ public class Client extends Thread implements ActionListener
 	public String readProcess(DatagramSocket socket, DatagramPacket packetR, DatagramPacket packetS) throws Exception {
 		textArea.append("packet being sent to error sim\n");
 		socket.send(packetS);
+		
 		String text = "";
 		int cur = 0;
 		int fin = 1;
@@ -192,7 +198,7 @@ public class Client extends Thread implements ActionListener
 			else{cur = fin;}
 			text += received;
 			int l = packetPrint.filenameLength(packetR);
-			if(received.length() >= 9) {received = received.substring(9,l);}
+			if(received.length() >= 13) {received = received.substring(13,l);}
 			
 			packetS.setData(packetR.getData());
 			socket.send(packetS);
@@ -222,12 +228,12 @@ public class Client extends Thread implements ActionListener
 		{
 			if(fin > cur)
 			{
-				int bot = 500*(cur-1);
-				int top = 500*(cur);
+				int bot = 496*(cur-1);
+				int top = 496*(cur);
 				pieces = message.substring(bot, top);
 			}
 			else
-				pieces = message.substring(500*(cur-1));
+				pieces = message.substring(496*(cur-1));
 			
 			System.out.println(cur + ": " +pieces);
 
@@ -240,7 +246,7 @@ public class Client extends Thread implements ActionListener
 			data[8] = (byte) fin;
 			
 			byte[] piecebyte = pieces.getBytes();
-			for(int j = 0; j < piecebyte.length; j++) {data[j+9] = piecebyte[j];}
+			for(int j = 0; j < piecebyte.length; j++) {data[j+13] = piecebyte[j];}
 			
 			packetS.setData(data);
 			socket.send(packetS);
