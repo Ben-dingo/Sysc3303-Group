@@ -75,4 +75,19 @@ public class packetPrint
 				}
 			}
 		}
+		
+		public static int filenameLength(DatagramPacket packet)
+		{
+			byte[] received = packet.getData();
+			for(int j = 0; j < received.length; j++)
+			{
+				if(received[j] == 0x00)
+				{
+					packet.setLength(j);
+					System.out.println(j);
+					return(j);
+				}
+			}
+			return 512;
+		}
 }

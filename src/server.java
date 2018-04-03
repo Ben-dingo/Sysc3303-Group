@@ -94,36 +94,55 @@ public class server extends Thread
 	
 	public void readProcess(DatagramSocket socket,DatagramPacket packetR, DatagramPacket packetS) throws Exception {
 		
-		socket.send(packetS);
-		socket.receive(packetR);
+		byte[] data = new byte[packetS.getLength()];
+		byte[] sent = packetS.getData();
+		int i = packetPrint.filenameLength(packetR);
+		byte[] filename=packetR.getData();
 		
-		String received = new String(packetR.getData(),StandardCharsets.UTF_8);
-		if(received.length() >= 9) {received = received.substring(9);}
+		String received = new String(filename,StandardCharsets.UTF_8);
+		if(received.length() >= 9) {received = received.substring(9,i);}
 
 		packetFile packet = new packetFile();
 		String message = packet.importText(received);
-		System.out.println(message);
-		int fin = (int) Math.ceil(message.length()/500);
+		System.out.println("message: " + message);
+		int fin = (int) Math.ceil(message.length()/500) + 1;
 		String pieces = "";
-		for(int cur = 0; cur < fin; cur++)
+		for(int cur = 1; cur <= fin; cur++)
 		{
-			int bot = 500*cur;
-			int top = 500*(cur + 1);
-			pieces = message.substring(bot, top);
+			if(fin > (cur+1))
+			{
+				int bot = 500*(cur - 1);
+				int top = 500*(cur);
+				pieces = message.substring(bot, top);
+			}
+			else
+				pieces = message.substring(500*(cur - 1));
+			
 			System.out.println(cur + ": " +pieces);
-			byte[] data = packetR.getData();
+			
 			data[0] = 0x10;
 			if(fin == 1){data[6] = (byte) 1;}
 			else{data[6] = (byte) 2;}
 			
 			data[7] = (byte) cur;
-			data[8] = (byte) fin;
+			data[8] = (byte) fin;	
 			
 			byte[] piecebyte = pieces.getBytes();
+			
+			String test = new String(piecebyte,StandardCharsets.UTF_8);
+			System.out.println(test);
+			
+			for(int j = 1; j < 6; j++) {data[j] = sent[j];}
 			for(int j = 0; j < piecebyte.length; j++) {data[j+9] = piecebyte[j];}
+			for(int j = (9 + piecebyte.length); j > 510; j++) {data[j] = 0x00;}
+			
+			String test2 = new String(data,StandardCharsets.UTF_8);
+			System.out.println(test2);
 			
 			packetS.setData(data);
+			System.out.println(packetPrint.Print("sending to Error", packetS));
 			socket.send(packetS);
+			socket.receive(packetR);
 		}
 	}
 	
