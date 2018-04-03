@@ -157,12 +157,8 @@ public class Client extends Thread implements ActionListener
 					writeProcess(socket,packetR,packetS);
 				}
 			}
-			
-			socket.send(packetS);
 			if(shutoff == true) {break;}
 			//time passes here while waiting for response from server
-			socket.receive(packetR);
-			if(this.mode) {textArea.append(packetPrint.Print("Received from Host", packetR));}
 		}
 	}
 
@@ -172,14 +168,15 @@ public class Client extends Thread implements ActionListener
 	}
 
 	public String readProcess(DatagramSocket socket, DatagramPacket packetR, DatagramPacket packetS) throws Exception {
+		textArea.append("packet being sent to error sim\n");
 		socket.send(packetS);
 		String text = "";
 		int cur = 0;
 		int fin = 1;
-		while(cur > fin)
+		while(cur < fin)
 		{
 			socket.receive(packetR);
-			
+			textArea.append(packetPrint.Print("Received from ErrorSim",packetR));
 			byte[] data = packetR.getData();
 			String received = new String(data,StandardCharsets.UTF_8);
 			if(data[6] == ((byte) 2))
@@ -191,13 +188,17 @@ public class Client extends Thread implements ActionListener
 			if(received.length() >= 9) {received = received.substring(9);}
 			text += received;
 			
+			System.out.println(cur);
+			System.out.println(fin);
+			
 			byte[] AckData = new byte[data.length];
 			AckData[0] = 0x11;
 			for(int i = 1; i > 10; i++){AckData[i] = data[i];}
 			packetS.setData(AckData);
 			socket.send(packetS);
+			textArea.append(packetPrint.Print("Sending to ErrorSim",packetS));
 		}
-		
+		textArea.append("Something bad happened\n");
 		return text;
 	}
 	
