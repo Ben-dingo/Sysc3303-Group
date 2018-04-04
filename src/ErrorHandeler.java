@@ -9,13 +9,13 @@ import java.net.DatagramPacket;
  */
 public class ErrorHandeler {
 
-	private int errorcode;
+	private int errorCode = 0;
 
 	public ErrorHandeler() {
 		
 	}
 
-	private void errorExtract(byte[] data) {
+	/*public void errorExtract(byte[] data) {
 		String error = new String(data);
 		if (error.equals("1")) {
 			System.out.println("Error Code 01: File not found");
@@ -30,6 +30,24 @@ public class ErrorHandeler {
 			System.out.println("Error Code 06: File already Exists");
 			System.out.println("Please try again.");
 		}
+	}*/
+	
+	public String getError(int error) {
+		String msg = "";
+		if (error == 1) {
+			msg = "Error Code 01: File not found";
+			//System.out.println("Please try again.");
+		} else if (error == 2) {
+			msg = "Error Code 02: Access Violation";
+			//System.out.println("Please try again.");
+		} else if (error == 3) {
+			msg = "Error Code 03: Disk full or allocation exceeded";
+			//System.out.println("Please try again.");
+		} else if (error == 6) {
+			msg = "Error Code 06: File already Exists";
+			//System.out.println("Please try again.");
+		}		
+		return msg;
 	}
 
 	/***
@@ -38,40 +56,36 @@ public class ErrorHandeler {
 	 * @param filename
 	 * @param request
 	 */
-	private boolean errorcheck(String filename, String request) {
+	public boolean errorCheck(String filename, String request) {
 		File file = new File(filename);
 
 		if (request.equals("read")) {
 			// Error Code 1
 			if (!file.exists()) {
-				errorcode = 1;
+				errorCode = 1;
 				return false;
 			}
-
 			// Error Code 2
-			if (!file.canRead()) {
-				errorcode = 2;
+			else if (!file.canRead()) {
+				errorCode = 2;
 				return false;
 			}
-
 		} else if (request.equals("write")) {
 			// Error Code 6
 			if (file.exists()) {
-				errorcode = 6;
+				errorCode = 6;
 				return false;
 			}
 			// Error Code 2
-			if (!file.canWrite()) {
-				errorcode = 2;
+			else if (!file.canWrite()) {
+				errorCode = 2;
 				return false;
 			}
-
 			// Error Code 3 - no space on disk
-			if(file.getUsableSpace() < file.length()) {
-				errorcode = 3;
+			else if(file.getUsableSpace() < file.length()) {
+				errorCode = 3;
 				return false;
 			}
-
 		}
 		return true;
 	}
@@ -83,10 +97,13 @@ public class ErrorHandeler {
 	public DatagramPacket makeErrorPacket() {
 		byte[]error = new byte[1];
 		ByteArrayOutputStream errorc = new ByteArrayOutputStream();
-		errorc.write(errorcode);
+		errorc.write(errorCode);
 		error = errorc.toByteArray();
 		DatagramPacket errorPacket = new DatagramPacket(error, error.length);
 		return errorPacket;
 	}
 	
+	public int getErrorCode() {
+		return errorCode;
+	}
 }
