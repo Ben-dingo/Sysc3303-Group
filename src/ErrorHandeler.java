@@ -71,13 +71,9 @@ public class ErrorHandeler {
 				return false;
 			}
 		} else if (request.equals("write")) {
-			// Error Code 6
-			if (file.exists()) {
-				errorCode = 6;
-				return false;
-			}
+			
 			// Error Code 2
-			else if (!file.canWrite()) {
+			if (!file.canWrite()) {
 				errorCode = 2;
 				return false;
 			}

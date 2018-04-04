@@ -10,13 +10,16 @@
  * it will cause errors in the packets
  */
 
-import java.io.IOException;
-import java.net.*;
-import java.util.concurrent.TimeUnit;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.*;
+import java.util.Random;
+import java.util.Scanner;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -26,26 +29,21 @@ import javax.swing.JTextField;
 public class ErrorSim extends Thread implements ActionListener
 {
 	boolean mode;
-
 	
-	DatagramSocket socketR, socketS, simErrorSocket;
-	InetAddress localHostAddress;
-	DatagramPacket packetR;
-	DatagramPacket simPacket;
-
+	DatagramSocket simErrorSocket;
 	protected Semaphore sema = new Semaphore(0);
-
+	
 	protected JPanel pane;
 	protected JTextField textField = new JTextField(35);
-	protected JTextArea textArea = new JTextArea(10, 35);
-
-	String input = "";
-
+    protected JTextArea textArea = new JTextArea(10, 35);
+    
+    String input = "";
+    
 	public ErrorSim(boolean mode)
 	{
 		this.mode = mode;
 	}
-
+	
 	//below is the method that runs when the thread starts, it just
 	//catches errors in the method it calls
 	public void run()
@@ -53,35 +51,18 @@ public class ErrorSim extends Thread implements ActionListener
 		try {
 			simErrorSocket = new DatagramSocket(50);
 			createAndShowGUI();
-			//recievePacket();
 			ui();
 		} catch (Exception e) {
 			System.out.println("Error Sim has failed");
 		}
 	}
 	
-	/*public void recievePacket() throws Exception {
-		try {
-			socketR = new DatagramSocket(23, InetAddress.getLocalHost());
-			socketS = new DatagramSocket();
-			simErrorSocket = new DatagramSocket(50);
-			InetAddress localHostAddress = InetAddress.getLocalHost();
-			DatagramPacket packetR = new DatagramPacket(new byte[512], 512);
-		} catch (SocketException | UnknownHostException e) {
-			e.printStackTrace();
-		}
-		socketR.receive(packetR);// receives packet from client
-		simPacket = packetR; //Create a copy of the recieve packet to use in the error simulator
-	}*/
-	
-
 	public void ErrorSimPurpose() throws Exception
 	{
-		textArea.append("please enter server IP");
+		textArea.append("please enter server IP\n");
 		sema.acquire();
 		String IP = input;
 		InetAddress serverHost = InetAddress.getByName(IP);
-		textArea.append("you have entered: " + serverHost.getHostAddress() + "\n");
 
 		DatagramSocket socketR = new DatagramSocket(23,InetAddress.getLocalHost());
 		DatagramSocket socketS = new DatagramSocket();
@@ -107,15 +88,13 @@ public class ErrorSim extends Thread implements ActionListener
 			if(this.mode) {textArea.append(packetPrint.Print("Sending to Client",ServerPacketS));}
 			socketS.send(ServerPacketS);//sends response to client
 		}
-
 	}
-
+	
 	public void errorInterface() {
 		byte[]data = "Error Simulator".getBytes();
-		simPacket = new DatagramPacket(data, data.length);		
+		DatagramPacket simPacket = new DatagramPacket(data, data.length);
 		
-
-
+		
 		textArea.append("What do you want to simulate?\n");
 		textArea.append("1: lose a packet\n");
 		textArea.append("2: delay a packet\n");
@@ -123,7 +102,7 @@ public class ErrorSim extends Thread implements ActionListener
 		textArea.append("4: Illegal TIP Orperation\n");
 		textArea.append("5: Unknown TID\n");
 		textArea.append("0: quit\n");
-
+		
 		try {sema.acquire();}
 		catch (InterruptedException e1) {}
 		String s = input;
@@ -152,7 +131,14 @@ public class ErrorSim extends Thread implements ActionListener
 	}
 
 	public void lostSimError(int type) {
-		
+		/*DatagramSocket simSocket;
+		try {
+			simSocket = new DatagramSocket();
+		} catch (SocketException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}*/
+
 		textArea.append("A packet has been lost\n");
 
 		switch (type) {
@@ -166,7 +152,7 @@ public class ErrorSim extends Thread implements ActionListener
 			textArea.append("A DATA packet seems to have been lost...\n");
 			break;
 		}
-
+		
 		ui();
 	}
 
@@ -176,7 +162,7 @@ public class ErrorSim extends Thread implements ActionListener
 	 * @param type
 	 */
 	public void delaySimError(int type) {
-		textArea.append("Delayed Packets have been dected!\n");
+		textArea.append("Duplicate Packets have been dected!\n");
 		String msg = "";
 		switch(type) {
 		case 1:	
@@ -189,7 +175,7 @@ public class ErrorSim extends Thread implements ActionListener
 			msg = "Request packet is delayed";
 			break;
 		}
-
+		
 		textArea.append("ErrorSim: "+ msg +". Waiting for packet...\n");
 		try {
 			TimeUnit.MILLISECONDS.sleep(5000);
@@ -199,9 +185,9 @@ public class ErrorSim extends Thread implements ActionListener
 		textArea.append("ErrorSim: Packet recieved and sent!\n");
 		ui();
 	}
-
+	
 	public void duplicateSimError() {
-
+		
 		textArea.append("Duplicating packets....\n");
 		try {
 			textArea.append("First Packet Sent...\n");
@@ -220,24 +206,23 @@ public class ErrorSim extends Thread implements ActionListener
 	 */
 	public void tidError(DatagramPacket p) {
 		textArea.append("Sending packet from different Port: " + simErrorSocket.getLocalPort() + "\n");
-		/*try {
+		try {
 			simErrorSocket.send(p);
 		} catch (IOException e) {
 			//e.printStackTrace();
 			textArea.append("Unable to send, packet, to unknown TID.");
-		}*/
-		textArea.append("Unable to send packet to unknow TID\n");
+		}
 		textArea.append("\n");
 		ui();
 	}
-
+	
 	/***
 	 * 
 	 * @param p
 	 */
 	public void packetError(DatagramPacket p, int type) {
 		textArea.append("Packet has been Corrupted \n");
-
+		
 		switch(type) {
 		case 1:
 			textArea.append("Opcode has been changed\n");
@@ -249,18 +234,18 @@ public class ErrorSim extends Thread implements ActionListener
 			textArea.append("The last bytes have been changed\n");
 			break;
 		}
-
+		
 		textArea.append("\n");
 		ui();
 	}
-
+	
 	/***************************************************************/
 	public void ui() {
 		//ErrorSim e = this;
-
+		
 		textArea.append("What function do you want to operate in?\n");
 		textArea.append("(N)ormal mode or (E)rror Sim mode or (Q)uit.\n");
-
+		
 		try {sema.acquire();}
 		catch (InterruptedException e1) {}
 		String s = input;
@@ -279,22 +264,22 @@ public class ErrorSim extends Thread implements ActionListener
 			//System.exit(0);
 		}
 	}
-
+	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		input = textField.getText();
-		textArea.append(input + "\n");
-		textField.setText("");
-
-		sema.release();
-
-		textArea.setCaretPosition(textArea.getDocument().getLength());
+        textArea.append(input + "\n");
+        textField.setText("");
+        
+        sema.release();
+        
+        textArea.setCaretPosition(textArea.getDocument().getLength());
 	}
-
+	
 	private void createAndShowGUI() {
         JFrame frame = new JFrame("ErrorSim");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(true);
+        frame.setResizable(false);
         
         textField.addActionListener(this);
         textArea.setEditable(false);
@@ -310,5 +295,4 @@ public class ErrorSim extends Thread implements ActionListener
         frame.setVisible(true);
         frame.toFront();
     }
-
 }

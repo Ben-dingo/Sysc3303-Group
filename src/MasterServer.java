@@ -53,7 +53,10 @@ public class MasterServer extends Thread implements ActionListener
 	
 	public void MasterPurpose() throws Exception
 	{
-		DatagramSocket socketR = new DatagramSocket(69,InetAddress.getLocalHost());
+		InetAddress localHostAddress= InetAddress.getLocalHost();
+		textArea.append("Your IP is: " + localHostAddress.getHostAddress() + "\n");
+		
+		DatagramSocket socketR = new DatagramSocket(69,localHostAddress);
 		DatagramPacket packetR = new DatagramPacket(new byte[512],512);
 		DatagramPacket packetS = packetR;
 		
