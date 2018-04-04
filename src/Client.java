@@ -1,6 +1,7 @@
 /*****************************************************************************
  * @Author: Ben St.Pierre
  * @Updated: Saturday February 3rd, 2018 by Jozef Tierney
+ * @Updated: 3rd April 2018 by Noor Ncho
  * 
  * @Purpose: This class is meant to send datagramPackets to the Error sim class
  * who then sends it to the server, then receive packets back from the server.
@@ -11,11 +12,12 @@
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Semaphore;
-
 import javax.swing.*;
+
 public class Client extends Thread implements ActionListener 
 {
 	String function;
@@ -23,6 +25,9 @@ public class Client extends Thread implements ActionListener
 	String message;
 	boolean shutoff = false;
 	static String destination;
+	
+	ErrorHandeler eh;
+	boolean errorFree = true;
 	
 	protected Semaphore sema = new Semaphore(0);
 	
@@ -36,6 +41,7 @@ public class Client extends Thread implements ActionListener
 	//creates client thread
 	public Client(boolean mode,boolean shutoff)
 	{
+		eh = new ErrorHandeler();
 		this.mode = mode;
 		this.shutoff = shutoff;
 	}
@@ -130,6 +136,9 @@ public class Client extends Thread implements ActionListener
 			}
 			else
 			{
+				//Check that the file is able to be passed to the server without any errors
+				checkfile(message, function);
+				
 				byte[] directory = message.getBytes();
 				byte[] toSend = new byte[directory.length + 10];
 				if(function.equals("read")) {
@@ -231,6 +240,25 @@ public class Client extends Thread implements ActionListener
 			socket.send(packetS);
 		}
 
+	}
+	
+	/***
+	 * Check for any possible error that may occur due to the type of file
+	 * @param msg
+	 * @param function
+	 * @throws Exception
+	 */
+	public void checkfile(String msg, String function) throws Exception {
+		File f = new File(msg);
+		String filename = f.getName();
+		errorFree = eh.errorCheck(filename, function);
+		
+		if(!errorFree) {
+			int error = eh.getErrorCode();
+			textArea.append(eh.getError(error) + "\n");
+			textArea.append("Please try again...\n");
+			ClientPurpose();
+		}
 	}
 	
 	@Override
