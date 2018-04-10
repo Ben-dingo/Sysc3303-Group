@@ -142,7 +142,7 @@ public class server extends Thread
 			for(int j = 0; j < piecebyte.length; j++) {data[j+9] = piecebyte[j];}
 			for(int j = (9 + piecebyte.length); j > 510; j++) {data[j] = 0x00;}
 			
-			packetFile packet2 = new packetFile();
+			packetFile packet2 = new packetFile();				//output the transfer results into a file called "read results" for easy comparison.
 	        packet2.modifyText("read results", pieces);
 	        
 			packetS.setData(data);
