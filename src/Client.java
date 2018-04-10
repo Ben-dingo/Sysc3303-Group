@@ -111,7 +111,12 @@ public class Client extends Thread implements ActionListener
 			while(true) 
 			{
 				if(shutoff == true) {break;}
-				textArea.append("Enter source directory.\n");
+				if(function.equals("read")) {
+					textArea.append("Enter source directory.\n");
+				}
+				if(function.equals("write")) {
+					textArea.append("Enter destination directory.\n");
+				}
 				sema.acquire();
 				message = input;
 				if(message.toLowerCase().equals("quit"))

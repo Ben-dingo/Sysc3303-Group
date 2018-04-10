@@ -8,6 +8,7 @@
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
+@SuppressWarnings("unused")
 public class ThreadRunner
 {
 	public static void main(String[] args)
@@ -15,6 +16,7 @@ public class ThreadRunner
 		boolean mode = false;
 		boolean shutoff = false;
 		String message;
+		@SuppressWarnings("resource")
 		Scanner reader = new Scanner(System.in);
 		System.out.println("Server started.\nEnter 'Quit' to shut down server.");
 		
