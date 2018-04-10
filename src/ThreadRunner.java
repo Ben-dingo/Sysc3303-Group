@@ -23,6 +23,9 @@ public class ThreadRunner
 		
 		while(true)//prompts user for input
 		{
+			packetFile packet2 = new packetFile();				//create folder to print the results of read transfers
+	        packet2.exportText("read results", "");
+			
 			
 			System.out.println("'Quiet' or 'Verbose'?");
 			String selection = reader.next();
