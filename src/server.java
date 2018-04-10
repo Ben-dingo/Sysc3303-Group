@@ -3,9 +3,8 @@
  * @Updated: Saturday January 20th, 2018
  * 
  * @Purpose: This class is meant to receive packets through the master server.
- * it receives read and write requests, prints them, creates confirmational
- * packets, prints those, and finally sends it back to the host. currently the
- * server thread closes itself once it's handled one packet
+ * it receives read and write requests and calls the read/write process methods
+ * to handle the request
  */
 import java.net.*;
 import java.nio.charset.StandardCharsets;
@@ -34,6 +33,7 @@ public class server extends Thread
 		}
 	}
 
+	//the server receives packets from master server and interprets them before sending relevant packets back to error sim
 	public void ServerPurpose() throws Exception
 	{
 		DatagramPacket packetR = new DatagramPacket(new byte[512],512);
@@ -58,6 +58,7 @@ public class server extends Thread
 		}
 	}
 	
+	//write process creates a file with the directory given, then writes whatever text it is given to the file
 	public void writeProcess(DatagramSocket socket, DatagramPacket packetR, DatagramPacket packetS) throws Exception {
 		
 		String filename = new String(packetR.getData(),StandardCharsets.UTF_8);
@@ -100,6 +101,7 @@ public class server extends Thread
         packet2.modifyText(filename, text);
 	}
 	
+	//readProcess reads data from a file and sends the string back to client
 	public void readProcess(DatagramSocket socket,DatagramPacket packetR, DatagramPacket packetS) throws Exception {
 		
 		byte[] data = new byte[packetS.getLength()];

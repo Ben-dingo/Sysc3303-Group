@@ -1,9 +1,9 @@
 /*****************************************************************************
  * @Author: Ben St.Pierre
- * @Updated: Saturday February 3rd, 2018
+ * @Updated: Saturday April 7th, 2018
  * 
  * @Purpose: This class prompts the user for what mode they would like to use.
- * It then sets up the 3 main threads used in this iteration
+ * It then sets up the threads the user wants to use
  */
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
@@ -11,6 +11,7 @@ import java.util.Scanner;
 @SuppressWarnings("unused")
 public class ThreadRunner
 {
+	//this is the main method to run for the system, it initializes all the threads used
 	public static void main(String[] args)
 	{
 		boolean mode = false;
@@ -26,11 +27,11 @@ public class ThreadRunner
 			System.out.println("'Quiet' or 'Verbose'?");
 			String selection = reader.next();
 			
-			if(selection.toLowerCase().equals("quiet"))
+			if(selection.toLowerCase().equals("quiet"))//quiet prints as little info as possible
 			{
 				break;
 			}
-			else if(selection.toLowerCase().equals("verbose"))
+			else if(selection.toLowerCase().equals("verbose"))//verbose prints frequently
 			{
 				mode = true;
 				break;
@@ -44,18 +45,40 @@ public class ThreadRunner
 			else {System.out.println("input must be 'Quiet' or 'Verbose'");}
 		}
 		
-		System.out.println("How many Clients would you like to start?");
-		int selection = reader.nextInt();
-		for(int i = 1; i <= selection; i++)
-		{
-			Client clientThread = new Client(mode,shutoff);
-			clientThread.start();
+		System.out.println("Client, Server or both?");
+		while(true) {
+			String selection = reader.next();
+			if(selection.toLowerCase().equals("client"))
+			{
+				Client clientThread = new Client(mode,shutoff);
+				clientThread.start();
+				ErrorSim ErrorSimThread = new ErrorSim(mode);
+				ErrorSimThread.start();//creates and runs errorsim and client
+				break;
+			}
+			else if(selection.toLowerCase().equals("server"))
+			{
+				MasterServer serverThread = new MasterServer(mode);
+				serverThread.start();//only creates and runs master server
+				break;
+			}	
+			else if(selection.toLowerCase().equals("both"))
+			{
+				MasterServer serverThread = new MasterServer(mode);
+				serverThread.start();
+				Client clientThread = new Client(mode,shutoff);
+				clientThread.start();
+				ErrorSim ErrorSimThread = new ErrorSim(mode);//creates 3 threads
+				ErrorSimThread.start();//runs threads
+				break;
+			}
+			else if(selection.toLowerCase().equals("quit"))
+			{
+				break;
+			}
+			else {
+				System.out.println("invalid input");
+			}
 		}
-		
-		MasterServer serverThread = new MasterServer(mode);
-		ErrorSim ErrorSimThread = new ErrorSim(mode);//creates 3 threads
-		
-		serverThread.start();
-		ErrorSimThread.start();//runs threads
 	}
 }

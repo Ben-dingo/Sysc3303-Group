@@ -6,8 +6,7 @@
  * server class and the client class, it receives packets from the client, 
  * prints the data, and sends the packets to the server. The server then
  * sends a new packet which is to be printed just like the other packet then
- * sent over to the client. For iteration 1 this only passes packets but later
- * it will cause errors in the packets
+ * sent over to the client.
  */
 
 import java.awt.BorderLayout;
@@ -57,6 +56,8 @@ public class ErrorSim extends Thread implements ActionListener
 		}
 	}
 	
+	//this is the normal mode method of ErrorSim, it receives the IP of the other computer then it waits for client to send it a packet
+	//once a packet is received it passes it over to server and awaits a response
 	public void ErrorSimPurpose() throws Exception
 	{
 		textArea.append("please enter server IP\n");
@@ -90,6 +91,7 @@ public class ErrorSim extends Thread implements ActionListener
 		}
 	}
 	
+	//this method is run if error mode was selected
 	public void errorInterface() {
 		byte[]data = "Error Simulator".getBytes();
 		DatagramPacket simPacket = new DatagramPacket(data, data.length);
@@ -130,14 +132,8 @@ public class ErrorSim extends Thread implements ActionListener
 		}
 	}
 
+	//simulates a packet being lost between client and server
 	public void lostSimError(int type) {
-		/*DatagramSocket simSocket;
-		try {
-			simSocket = new DatagramSocket();
-		} catch (SocketException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}*/
 
 		textArea.append("A packet has been lost\n");
 
@@ -156,11 +152,8 @@ public class ErrorSim extends Thread implements ActionListener
 		ui();
 	}
 
-	/***
-	 * Takes is a random number to select what type of packet would be delayed,
-	 * and simulates the thread waiting for 10secs before recieving the packet and sending it on.
-	 * @param type
-	 */
+	//Takes is a random number to select what type of packet would be delayed,
+	//and simulates the thread waiting for 10secs before receiving the packet and sending it on.
 	public void delaySimError(int type) {
 		textArea.append("Duplicate Packets have been dected!\n");
 		String msg = "";
@@ -186,6 +179,7 @@ public class ErrorSim extends Thread implements ActionListener
 		ui();
 	}
 	
+	//simulates duplicate packet
 	public void duplicateSimError() {
 		
 		textArea.append("Duplicating packets....\n");
@@ -200,10 +194,7 @@ public class ErrorSim extends Thread implements ActionListener
 		ui();
 	}
 
-	/***
-	 * 
-	 * @param p
-	 */
+	//simulates changing the TID of the packet
 	public void tidError(DatagramPacket p) {
 		textArea.append("Sending packet from different Port: " + simErrorSocket.getLocalPort() + "\n");
 		try {
@@ -216,10 +207,7 @@ public class ErrorSim extends Thread implements ActionListener
 		ui();
 	}
 	
-	/***
-	 * 
-	 * @param p
-	 */
+	//simulates corrupting data in packet
 	public void packetError(DatagramPacket p, int type) {
 		textArea.append("Packet has been Corrupted \n");
 		
@@ -239,9 +227,8 @@ public class ErrorSim extends Thread implements ActionListener
 		ui();
 	}
 	
-	/***************************************************************/
+	//this method is called during set up, it asks the user what mode it should run in
 	public void ui() {
-		//ErrorSim e = this;
 		
 		textArea.append("What function do you want to operate in?\n");
 		textArea.append("(N)ormal mode or (E)rror Sim mode or (Q)uit.\n");
@@ -261,11 +248,11 @@ public class ErrorSim extends Thread implements ActionListener
 		}else if(s.equalsIgnoreCase("Q")) {
 			textArea.append("\n Error Simulator Shutting down. GoodBye!\n");
 			Thread.currentThread().interrupt();
-			//System.exit(0);
 		}
 	}
 	
 	@Override
+	//this method receives the text the user inputs and releases the semaphore, the released semaphore tells the thread that there is new user input 
 	public void actionPerformed(ActionEvent arg0) {
 		input = textField.getText();
         textArea.append(input + "\n");
@@ -276,6 +263,7 @@ public class ErrorSim extends Thread implements ActionListener
         textArea.setCaretPosition(textArea.getDocument().getLength());
 	}
 	
+	//creates the GUI for the thread
 	private void createAndShowGUI() {
         JFrame frame = new JFrame("ErrorSim");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

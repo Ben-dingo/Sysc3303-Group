@@ -1,7 +1,6 @@
 /*****************************************************************************
  * @Author: Ben St.Pierre
- * @Updated: Saturday February 3rd, 2018 by Jozef Tierney
- * @Updated: 3rd April 2018 by Noor Ncho
+ * @Updated: Saturday April 7th, 2018
  * 
  * @Purpose: This class is meant to send datagramPackets to the Error sim class
  * who then sends it to the server, then receive packets back from the server.
@@ -58,15 +57,14 @@ public class Client extends Thread implements ActionListener
 		}
 	}
 	
-	/**
-	 * Returns a string representation of the client data.
-	 */
+	//Returns a string representation of the client data.
 	public String toString() {
 		String s = "Function: " + "\n" + function + "\n";
 		s = s + "Message: " + "\n" + message + "\n";
 		return s;
 	}
 	
+	//
 	public void ClientPurpose() throws Exception
 	{
 		DatagramSocket socket = new DatagramSocket();
@@ -77,13 +75,9 @@ public class Client extends Thread implements ActionListener
 		DatagramPacket packetS = new DatagramPacket(new byte[512],512,localHostAddress,23);
 		DatagramPacket packetR = new DatagramPacket(new byte[512],512);//all packets and sockets created
 		
-		while(true)
+		while(true)//this loop should continue until client is closed
 		{
-			//byte array to become packet data
-			//currently byte array is only 12 bytes long this is due to issues with
-			//this will be dealt with in iteration 2
-			
-			while(true) 
+			while(true)//this loop continues until proper input is given
 			{
 				if(shutoff == true) {break;}
 				textArea.append("Would you like to read, write or quit?\n");
@@ -108,7 +102,7 @@ public class Client extends Thread implements ActionListener
 				}
 			}
 			
-			while(true) 
+			while(true)
 			{
 				if(shutoff == true) {break;}
 				if(function.equals("read")) {
@@ -183,6 +177,7 @@ public class Client extends Thread implements ActionListener
 		return destination;
 	}
 
+	//requests server to read from a file server side, then writes the received data to a file client side
 	public String readProcess(DatagramSocket socket, DatagramPacket packetR, DatagramPacket packetS) throws Exception {
 		textArea.append("packet being sent to error sim\n");
 		socket.send(packetS);
@@ -218,6 +213,7 @@ public class Client extends Thread implements ActionListener
 		return text;
 	}
 	
+	//requests server create a new file, then sends text to put into the file
 	public void writeProcess(DatagramSocket socket, DatagramPacket packetR,DatagramPacket packetS) throws Exception {
 		socket.send(packetS);
 		socket.receive(packetR);
@@ -267,12 +263,7 @@ public class Client extends Thread implements ActionListener
 
 	}
 	
-	/***
-	 * Check for any possible error that may occur due to the type of file
-	 * @param msg
-	 * @param function
-	 * @throws Exception
-	 */
+	//Check for any possible error that may occur due to the type of file
 	public void checkfile(String msg, String function) throws Exception {
 		File f = new File(msg);
 		String filename = f.getName();
@@ -287,6 +278,7 @@ public class Client extends Thread implements ActionListener
 	}
 	
 	@Override
+	//this method receives the text the user inputs and releases the semaphore, the released semaphore tells the thread that there is new user input 
 	public void actionPerformed(ActionEvent arg0) {
 		input = textField.getText();
         textArea.append(input + "\n");
@@ -298,6 +290,7 @@ public class Client extends Thread implements ActionListener
         textArea.setCaretPosition(textArea.getDocument().getLength());
 	}
 	
+	//creates the GUI for the thread
 	private void createAndShowGUI() {
         JFrame frame = new JFrame("Client");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -1,13 +1,12 @@
-import java.io.*;
-import java.util.Scanner;
-/**
- * 
+/******************************************************************************************
  * @author Omar Dawoud
  * Student #: 101006779
  * Last Updated: 2/17/2018
  * Class: This class contains methods which save and load data in the form of .txt files.
  *
  */
+import java.io.*;
+import java.util.Scanner;
 public class packetFile{
 	
 	public packetFile() {}

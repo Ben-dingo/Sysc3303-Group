@@ -1,6 +1,6 @@
 /*****************************************************************************
  * @Author: Ben St.Pierre
- * @Updated: Saturday February 3rd, 2018
+ * @Updated: Saturday April 7th, 2018
  * 
  * @Purpose: This class receives all the packets sent by the error sim. It creates
  * a new server thread to handle each incoming packet, once it passes on the packet
@@ -51,6 +51,8 @@ public class MasterServer extends Thread implements ActionListener
 		}
 	}
 	
+	//the master server receives packets from errorSim, if the packet has a specified port it
+	//sends it to the server under that port, if not it creates a new server thread
 	public void MasterPurpose() throws Exception
 	{
 		InetAddress localHostAddress= InetAddress.getLocalHost();
@@ -105,6 +107,7 @@ public class MasterServer extends Thread implements ActionListener
 	}
 	
 	@Override
+	//this method receives the text the user inputs and releases the semaphore, the released semaphore tells the thread that there is new user input 
 	public void actionPerformed(ActionEvent arg0) {
 		input = textField.getText();
         textArea.append(input + "\n");
@@ -116,6 +119,7 @@ public class MasterServer extends Thread implements ActionListener
         textArea.setCaretPosition(textArea.getDocument().getLength());
 	}
 	
+	//creates the GUI for the thread
 	private void createAndShowGUI() {
         JFrame frame = new JFrame("Master Server");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
