@@ -64,7 +64,7 @@ public class Client extends Thread implements ActionListener
 		return s;
 	}
 	
-	//
+	//client purpose receives user input and sets up packet format, then it splits into either readProcess or writeProcess
 	public void ClientPurpose() throws Exception
 	{
 		DatagramSocket socket = new DatagramSocket();
@@ -124,11 +124,8 @@ public class Client extends Thread implements ActionListener
 				}
 				else {
 					textArea.append("A directory must be entered to procede.\n");
-				}
-				
+				}	
 			}
-			
-			
 			
 			if(shutoff == true)//performs shutdown for all running threads
 			{
@@ -137,8 +134,7 @@ public class Client extends Thread implements ActionListener
 			}
 			else
 			{
-				//Check that the file is able to be passed to the server without any errors
-				checkfile(message, function);
+				//checkfile(message, function);
 				
 				byte[] directory = message.getBytes();
 				byte[] toSend = new byte[directory.length + 10];
